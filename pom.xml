@@ -8,8 +8,8 @@
     <artifactId>tennis-scoreboard</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>tennis-scoreboard</name>
-
     <packaging>war</packaging>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.target>17</maven.compiler.target>
@@ -31,6 +31,11 @@
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>6.0.2.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.4</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
