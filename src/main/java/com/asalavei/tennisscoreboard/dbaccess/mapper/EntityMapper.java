@@ -1,19 +1,14 @@
 package com.asalavei.tennisscoreboard.dbaccess.mapper;
 
-import com.asalavei.tennisscoreboard.dbaccess.entities.MatchEntity;
-import com.asalavei.tennisscoreboard.dbaccess.entities.PlayerEntity;
-import com.asalavei.tennisscoreboard.dto.Match;
-import com.asalavei.tennisscoreboard.dto.Player;
-import org.mapstruct.Mapper;
+import java.util.List;
 
-@Mapper
-public interface EntityMapper {
+public interface EntityMapper<D, E> {
 
-    PlayerEntity toEntity(Player player);
+    E toEntity(D dto);
 
-    Player toDto(PlayerEntity player);
+    D toDto(E entity);
 
-    MatchEntity toEntity(Match player);
+    List<E> toEntity(List<D> dto);
 
-    Match toDto(MatchEntity player);
+    List<D> toDto(List<E> entity);
 }
