@@ -1,13 +1,22 @@
 package com.asalavei.tennisscoreboard.dto;
 
-import lombok.Value;
+import lombok.Data;
 import lombok.Builder;
 
-@Value
+
+@Data
 @Builder
 public class Player {
 
-    Integer id;
+    private final Integer id;
 
-    String name;
+    private final String name;
+
+    private String gamePoints;
+
+    private int sets;
+
+    private int games;
+
+    private int points;
 }
