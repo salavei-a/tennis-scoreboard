@@ -20,11 +20,19 @@ public class FinishedMatchesPersistenceService {
         return mapper.toDto(matchRepository.save(mapper.toEntity(match)));
     }
 
-    public List<Match> findAll() {
-        return mapper.toDto(matchRepository.findAll());
+    public List<Match> findAll(int pageNumber, int pageSize) {
+        return mapper.toDto(matchRepository.findAll(pageNumber, pageSize));
     }
 
-    public List<Match> findAllByPlayerName(String name) {
-        return mapper.toDto(matchRepository.findAllByPlayerName(name));
+    public List<Match> findAllByPlayerName(String name, int pageNumber, int pageSize) {
+        return mapper.toDto(matchRepository.findAllByPlayerName(name, pageNumber, pageSize));
+    }
+
+    public int countTotalPages(int pageSize) {
+        return matchRepository.countTotalPages(pageSize);
+    }
+
+    public int countTotalPagesByPlayerName(String name, int pageSize) {
+        return matchRepository.countTotalPagesByPlayerName(name, pageSize);
     }
 }
