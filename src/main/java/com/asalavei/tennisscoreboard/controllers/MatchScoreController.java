@@ -9,19 +9,28 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.UUID;
 
 @WebServlet("/match-score")
 public class MatchScoreController extends HttpServlet {
 
     private final OngoingMatchesService ongoingMatchesService = new OngoingMatchesService();
+    private final MatchScoreCalculationService matchScoreCalculationService = new MatchScoreCalculationService();
+    private final FinishedMatchesPersistenceService finishedMatchesPersistenceService = new FinishedMatchesPersistenceService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        UUID uuid = UUID.fromString(request.getParameter("uuid"));
+        String uuidParameter = request.getParameter("uuid");
+
+        if (StringUtils.isBlank(uuidParameter)) {
+            response.sendRedirect("/");
+            return;
+        }
+
+        UUID uuid = UUID.fromString(uuidParameter);
 
         request.setAttribute("match", ongoingMatchesService.getOngoingMatch(uuid));
         request.setAttribute("uuid", uuid);
@@ -30,9 +39,6 @@ public class MatchScoreController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        MatchScoreCalculationService matchScoreCalculationService = new MatchScoreCalculationService();
-        FinishedMatchesPersistenceService finishedMatchesPersistenceService = new FinishedMatchesPersistenceService();
-
         UUID uuid = UUID.fromString(request.getParameter("uuid"));
 
         Match match = ongoingMatchesService.getOngoingMatch(uuid);
@@ -42,16 +48,10 @@ public class MatchScoreController extends HttpServlet {
         Match calculatedMatch = matchScoreCalculationService.calculate(match, pointWinnerId);
 
         if (calculatedMatch.getWinner() != null) {
-            Match persistedMatch = finishedMatchesPersistenceService.persist(calculatedMatch);
-
-            response.setContentType("text/html");
-            PrintWriter out = response.getWriter();
-            out.println("<html><body>");
-            out.println("<h1>" + "Winner: " + persistedMatch.getWinner().getName() + "</h1>");
-            out.println("</body></html>");
-
+            finishedMatchesPersistenceService.persist(calculatedMatch);
             ongoingMatchesService.removeMatch(uuid);
 
+            response.sendRedirect("/matches");
             return;
         }
 
