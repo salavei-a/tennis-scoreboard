@@ -10,6 +10,8 @@ public class MatchScoreCalculationService {
     private static final int MIN_POINTS_TO_WIN_A_GAME = 4;
     private static final int MIN_POINTS_TO_WIN_A_SET = 6;
     private static final int MIN_POINTS_TO_WIN_TIE_BREAK = 7;
+    private static final String GAME_ADVANTAGE = "AD";
+    private static final String SCORE_40_POINTS = "40";
 
     private static final Map<Integer, Integer> TENNIS_POINTS_MAPPING = Map.of(
             1, 15,
@@ -21,33 +23,30 @@ public class MatchScoreCalculationService {
         Player firstPlayer = match.getFirstPlayer();
         Player secondPlayer = match.getSecondPlayer();
 
-        wonPoint(determinePointWinner(match, pointWinnerId));
+        Player pointWinner = determinePointWinner(match, pointWinnerId);
+
+        wonPoint(pointWinner);
 
         if (isGameFinished(match)) {
-            wonGame(determinePointWinner(match, pointWinnerId));
+            wonGame(pointWinner);
 
-            resetPoints(firstPlayer);
-            resetPoints(secondPlayer);
+            resetPoints(match);
         }
 
         if (isSetFinished(match)) {
-            wonSet(determinePointWinner(match, pointWinnerId));
+            wonSet(pointWinner);
 
-            resetGames(firstPlayer);
-            resetGames(secondPlayer);
-
-            resetPoints(firstPlayer);
-            resetPoints(secondPlayer);
+            resetPoints(match);
+            resetGames(match);
         }
 
-        firstPlayer.setGamePoints(formatGamePoints(firstPlayer));
-        secondPlayer.setGamePoints(formatGamePoints(secondPlayer));
+        assignGamePoints(match);
 
         if (isMatchFinished(match)) {
             return Match.builder()
                     .firstPlayer(firstPlayer)
                     .secondPlayer(secondPlayer)
-                    .winner(determinePointWinner(match, pointWinnerId))
+                    .winner(pointWinner)
                     .build();
         }
 
@@ -55,6 +54,18 @@ public class MatchScoreCalculationService {
                 .firstPlayer(firstPlayer)
                 .secondPlayer(secondPlayer)
                 .build();
+    }
+
+    private void wonPoint(Player player) {
+        player.setPoints(player.getPoints() + 1);
+    }
+
+    private void wonGame(Player player) {
+        player.setGames(player.getGames() + 1);
+    }
+
+    private void wonSet(Player player) {
+        player.setSets(player.getSets() + 1);
     }
 
     private Player determinePointWinner(Match match, Integer pointWinnerId) {
@@ -66,38 +77,10 @@ public class MatchScoreCalculationService {
             return match.getSecondPlayer();
         }
 
-        throw new IllegalArgumentException("Invalid player ID: " + pointWinnerId);
+        throw new IllegalArgumentException("Invalid player ID: " + pointWinnerId); // TODO: handle custom exception
     }
 
-    private static void wonPoint(Player player) {
-        player.setPoints(player.getPoints() + 1);
-    }
-
-    private static void wonGame(Player player) {
-        player.setGames(player.getGames() + 1);
-    }
-
-    private static void wonSet(Player player) {
-        player.setSets(player.getSets() + 1);
-    }
-
-    private static void resetPoints(Player player) {
-        player.setPoints(0);
-    }
-
-    private static void resetGames(Player player) {
-        player.setGames(0);
-    }
-
-    public static String formatGamePoints(Player player) {
-        return String.valueOf(mapGamePoints(player.getPoints()));
-    }
-
-    public static int mapGamePoints(int gamePoints) {
-        return TENNIS_POINTS_MAPPING.getOrDefault(gamePoints, gamePoints);
-    }
-
-    private static boolean isGameFinished(Match match) {
+    private boolean isGameFinished(Match match) {
         int firstPlayerPoints = match.getFirstPlayer().getPoints();
         int secondPlayerPoints = match.getSecondPlayer().getPoints();
 
@@ -110,7 +93,7 @@ public class MatchScoreCalculationService {
                 Math.abs(firstPlayerPoints - secondPlayerPoints) > 1;
     }
 
-    public static boolean isSetFinished(Match match) {
+    private boolean isSetFinished(Match match) {
         int firstPlayerGames = match.getFirstPlayer().getGames();
         int secondPlayerGames = match.getSecondPlayer().getGames();
 
@@ -129,11 +112,89 @@ public class MatchScoreCalculationService {
         return false;
     }
 
-    private static boolean isTieBreak(Match match) {
+    private boolean isTieBreak(Match match) {
         return match.getFirstPlayer().getGames() == 6 && match.getSecondPlayer().getGames() == 6;
     }
 
-    public static boolean isMatchFinished(Match match) {
+    private boolean isMatchFinished(Match match) {
         return match.getFirstPlayer().getSets() == 2 || match.getSecondPlayer().getSets() == 2;
+    }
+
+    private void resetPoints(Match match) {
+        match.getFirstPlayer().setPoints(0);
+        match.getSecondPlayer().setPoints(0);
+    }
+
+    private void resetGames(Match match) {
+        match.getFirstPlayer().setGames(0);
+        match.getSecondPlayer().setGames(0);
+    }
+
+    private void assignGamePoints(Match match) {
+        Player firstPlayer = match.getFirstPlayer();
+        Player secondPlayer = match.getSecondPlayer();
+
+        int firstPlayerPoints = firstPlayer.getPoints();
+        int secondPlayerPoints = secondPlayer.getPoints();
+
+        if (isTieBreak(match)) {
+            assignGamePointsForTieBreak(firstPlayer, secondPlayer);
+            return;
+        }
+
+        if (isWithinRegularGamePoints(firstPlayerPoints, secondPlayerPoints)) {
+            assignRegularGamePoints(firstPlayer, secondPlayer);
+            return;
+        }
+
+        if (hasPlayerAdvantage(firstPlayerPoints, secondPlayerPoints)) {
+            assignGameAdvantage(firstPlayer, secondPlayer);
+            return;
+        }
+
+        if (hasPlayerAdvantage(secondPlayerPoints, firstPlayerPoints)) {
+            assignGameAdvantage(secondPlayer, firstPlayer);
+            return;
+        }
+
+        if (isDeuce(firstPlayerPoints, secondPlayerPoints)) {
+            assignDeuceGamePoints(firstPlayer, secondPlayer);
+        }
+    }
+
+    private void assignGamePointsForTieBreak(Player firstPlayer, Player secondPlayer) {
+        firstPlayer.setGamePoints(String.valueOf(firstPlayer.getPoints()));
+        secondPlayer.setGamePoints(String.valueOf(secondPlayer.getPoints()));
+    }
+
+    private boolean isWithinRegularGamePoints(int firstPlayerPoints, int secondPlayerPoints) {
+        return firstPlayerPoints < MIN_POINTS_TO_WIN_A_GAME && secondPlayerPoints < MIN_POINTS_TO_WIN_A_GAME;
+    }
+
+    private void assignRegularGamePoints(Player firstPlayer, Player secondPlayer) {
+        firstPlayer.setGamePoints(String.valueOf(getFormattedGamePoints(firstPlayer.getPoints())));
+        secondPlayer.setGamePoints(String.valueOf(getFormattedGamePoints(secondPlayer.getPoints())));
+    }
+
+    private int getFormattedGamePoints(int gamePoints) {
+        return TENNIS_POINTS_MAPPING.getOrDefault(gamePoints, gamePoints);
+    }
+
+    private boolean hasPlayerAdvantage(int playerPoints, int opponentPoints) {
+        return playerPoints >= MIN_POINTS_TO_WIN_A_GAME && playerPoints > opponentPoints;
+    }
+
+    private void assignGameAdvantage(Player playerWithAdvantage, Player otherPlayer) {
+        playerWithAdvantage.setGamePoints(GAME_ADVANTAGE);
+        otherPlayer.setGamePoints(SCORE_40_POINTS);
+    }
+
+    private boolean isDeuce(int firstPlayerPoints, int secondPlayerPoints) {
+        return firstPlayerPoints >= MIN_POINTS_TO_WIN_A_GAME && firstPlayerPoints == secondPlayerPoints;
+    }
+
+    private void assignDeuceGamePoints(Player firstPlayer, Player secondPlayer) {
+        firstPlayer.setGamePoints(SCORE_40_POINTS);
+        secondPlayer.setGamePoints(SCORE_40_POINTS);
     }
 }
