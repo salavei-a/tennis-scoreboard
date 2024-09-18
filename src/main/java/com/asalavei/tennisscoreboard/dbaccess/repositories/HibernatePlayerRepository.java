@@ -1,7 +1,8 @@
 package com.asalavei.tennisscoreboard.dbaccess.repositories;
 
-import com.asalavei.tennisscoreboard.dbaccess.HibernateUtil;
+import com.asalavei.tennisscoreboard.HibernateContextListener;
 import com.asalavei.tennisscoreboard.dbaccess.entities.PlayerEntity;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -10,7 +11,7 @@ import java.util.Optional;
 
 public class HibernatePlayerRepository implements PlayerRepository {
 
-    private static final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+    private static final SessionFactory sessionFactory = HibernateContextListener.getSessionFactory();
 
     @Override
     public PlayerEntity save(PlayerEntity entity) {
@@ -22,14 +23,15 @@ public class HibernatePlayerRepository implements PlayerRepository {
             session.persist(entity);
 
             transaction.commit();
-        } catch (Exception e) {
+
+            return entity;
+        } catch (HibernateException e) {
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
-            e.printStackTrace(); // TODO: handle custom exception
-        }
 
-        return entity;
+            throw new RuntimeException(e); // TODO: handle custom exception
+        }
     }
 
     @Override
@@ -46,13 +48,12 @@ public class HibernatePlayerRepository implements PlayerRepository {
             transaction.commit();
 
             return Optional.ofNullable(playerEntity);
-        } catch (Exception e) {
+        } catch (HibernateException e) {
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
-            e.printStackTrace(); // TODO: handle custom exception
-        }
 
-        return Optional.empty();
+            throw new RuntimeException(e); // TODO: handle custom exception
+        }
     }
 }
