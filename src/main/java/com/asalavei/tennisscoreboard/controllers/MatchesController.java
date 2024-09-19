@@ -1,5 +1,6 @@
 package com.asalavei.tennisscoreboard.controllers;
 
+import com.asalavei.tennisscoreboard.controllers.dto.PlayerRequestDto;
 import com.asalavei.tennisscoreboard.services.FinishedMatchesPersistenceService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -19,7 +20,11 @@ public class MatchesController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String playerName = request.getParameter("filter_by_player_name");
+        PlayerRequestDto playerRequestDto = PlayerRequestDto.builder()
+                .name(request.getParameter("filter_by_player_name"))
+                .build();
+
+        String playerName = playerRequestDto.getName();
         String page = request.getParameter("page");
 
         if (playerName != null) {

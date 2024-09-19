@@ -1,18 +1,24 @@
 package com.asalavei.tennisscoreboard.controllers;
 
-import com.asalavei.tennisscoreboard.dto.Player;
+import com.asalavei.tennisscoreboard.controllers.dto.PlayerRequestDto;
+import com.asalavei.tennisscoreboard.controllers.mapper.PlayerDtoMapper;
 import com.asalavei.tennisscoreboard.services.OngoingMatchesService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.mapstruct.factory.Mappers;
 
 import java.io.IOException;
 import java.util.UUID;
 
 @WebServlet("/new-match")
 public class NewMatchController extends HttpServlet {
+
+    private final OngoingMatchesService ongoingMatchesService = new OngoingMatchesService();
+
+    private final PlayerDtoMapper mapper = Mappers.getMapper(PlayerDtoMapper.class);
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -21,15 +27,15 @@ public class NewMatchController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Player firstPlayer = Player.builder()
+        PlayerRequestDto firstPlayer = PlayerRequestDto.builder()
                 .name(request.getParameter("firstPlayer"))
                 .build();
 
-        Player secondPlayer = Player.builder()
+        PlayerRequestDto secondPlayer = PlayerRequestDto.builder()
                 .name(request.getParameter("secondPlayer"))
                 .build();
 
-        UUID uuid = new OngoingMatchesService().create(firstPlayer, secondPlayer);
+        UUID uuid = ongoingMatchesService.create(mapper.toDto(firstPlayer), mapper.toDto(secondPlayer));
 
         response.sendRedirect("/match-score?uuid=" + uuid);
     }

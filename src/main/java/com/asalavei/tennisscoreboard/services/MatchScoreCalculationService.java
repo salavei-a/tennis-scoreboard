@@ -19,11 +19,11 @@ public class MatchScoreCalculationService {
             3, 40
     );
 
-    public Match calculate(Match match, Integer pointWinnerId) {
+    public Match calculate(Match match, Player playerWinner) {
         Player firstPlayer = match.getFirstPlayer();
         Player secondPlayer = match.getSecondPlayer();
 
-        Player pointWinner = determinePointWinner(match, pointWinnerId);
+        Player pointWinner = determinePointWinner(match, playerWinner.getId());
 
         wonPoint(pointWinner);
 

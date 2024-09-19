@@ -1,5 +1,7 @@
 package com.asalavei.tennisscoreboard.controllers;
 
+import com.asalavei.tennisscoreboard.controllers.dto.PlayerRequestDto;
+import com.asalavei.tennisscoreboard.controllers.mapper.PlayerDtoMapper;
 import com.asalavei.tennisscoreboard.dto.Match;
 import com.asalavei.tennisscoreboard.services.FinishedMatchesPersistenceService;
 import com.asalavei.tennisscoreboard.services.MatchScoreCalculationService;
@@ -10,6 +12,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
+import org.mapstruct.factory.Mappers;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -20,6 +23,8 @@ public class MatchScoreController extends HttpServlet {
     private final OngoingMatchesService ongoingMatchesService = new OngoingMatchesService();
     private final MatchScoreCalculationService matchScoreCalculationService = new MatchScoreCalculationService();
     private final FinishedMatchesPersistenceService finishedMatchesPersistenceService = new FinishedMatchesPersistenceService();
+
+    private final PlayerDtoMapper playerMapper = Mappers.getMapper(PlayerDtoMapper.class);
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -43,9 +48,11 @@ public class MatchScoreController extends HttpServlet {
 
         Match match = ongoingMatchesService.getOngoingMatch(uuid);
 
-        Integer pointWinnerId = Integer.valueOf(request.getParameter("player"));
+        PlayerRequestDto playerWinner = PlayerRequestDto.builder()
+                .id(Integer.valueOf(request.getParameter("player")))
+                .build();
 
-        Match calculatedMatch = matchScoreCalculationService.calculate(match, pointWinnerId);
+        Match calculatedMatch = matchScoreCalculationService.calculate(match, playerMapper.toDto(playerWinner));
 
         if (calculatedMatch.getWinner() != null) {
             finishedMatchesPersistenceService.persist(calculatedMatch);
