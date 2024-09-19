@@ -1,4 +1,4 @@
-package com.asalavei.tennisscoreboard.controllers.dto;
+package com.asalavei.tennisscoreboard.web.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

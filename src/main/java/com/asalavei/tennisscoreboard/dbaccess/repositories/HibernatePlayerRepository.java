@@ -1,6 +1,6 @@
 package com.asalavei.tennisscoreboard.dbaccess.repositories;
 
-import com.asalavei.tennisscoreboard.HibernateContextListener;
+import com.asalavei.tennisscoreboard.dbaccess.config.HibernateUtil;
 import com.asalavei.tennisscoreboard.dbaccess.entities.PlayerEntity;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public class HibernatePlayerRepository implements PlayerRepository {
 
-    private static final SessionFactory sessionFactory = HibernateContextListener.getSessionFactory();
+    private static final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
     @Override
     public PlayerEntity save(PlayerEntity entity) {

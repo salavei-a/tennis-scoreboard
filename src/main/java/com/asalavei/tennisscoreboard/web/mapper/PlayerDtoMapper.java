@@ -1,6 +1,6 @@
-package com.asalavei.tennisscoreboard.controllers.mapper;
+package com.asalavei.tennisscoreboard.web.mapper;
 
-import com.asalavei.tennisscoreboard.controllers.dto.PlayerRequestDto;
+import com.asalavei.tennisscoreboard.web.dto.PlayerRequestDto;
 import com.asalavei.tennisscoreboard.dto.Player;
 import org.mapstruct.Mapper;
 

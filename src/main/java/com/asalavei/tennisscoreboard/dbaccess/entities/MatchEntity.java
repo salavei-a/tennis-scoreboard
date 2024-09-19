@@ -15,6 +15,7 @@ import org.hibernate.annotations.Check;
 @Entity
 @Table(name = "matches")
 public class MatchEntity {
+
     @Id
     @ToString.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,7 +1,6 @@
 package com.asalavei.tennisscoreboard.services;
 
 import com.asalavei.tennisscoreboard.dbaccess.entities.PlayerEntity;
-import com.asalavei.tennisscoreboard.dbaccess.mapper.EntityMapper;
 import com.asalavei.tennisscoreboard.dbaccess.mapper.PlayerEntityMapper;
 import com.asalavei.tennisscoreboard.dbaccess.repositories.HibernatePlayerRepository;
 import com.asalavei.tennisscoreboard.dbaccess.repositories.PlayerRepository;
@@ -19,7 +18,7 @@ public class OngoingMatchesService {
 
     private final PlayerRepository playerRepository = new HibernatePlayerRepository();
 
-    private final EntityMapper<Player, PlayerEntity> mapper = Mappers.getMapper(PlayerEntityMapper.class);
+    private final PlayerEntityMapper mapper = Mappers.getMapper(PlayerEntityMapper.class);
 
     public UUID create(Player firstPlayerToPlay, Player secondPlayerToPlay) {
         Optional<PlayerEntity> firstPlayerFound = playerRepository.findByName(firstPlayerToPlay.getName());

@@ -1,6 +1,6 @@
-package com.asalavei.tennisscoreboard.controllers;
+package com.asalavei.tennisscoreboard.web.controllers;
 
-import com.asalavei.tennisscoreboard.controllers.dto.PlayerRequestDto;
+import com.asalavei.tennisscoreboard.web.dto.PlayerRequestDto;
 import com.asalavei.tennisscoreboard.services.FinishedMatchesPersistenceService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
