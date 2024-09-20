@@ -121,6 +121,25 @@
             background-color: #45a049;
             color: white;
         }
+
+        .error-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px 20px;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            z-index: 1000;
+            min-width: 250px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .error-notification.show {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -234,6 +253,27 @@
         %>
     </div>
 </div>
+
+<% String errorMessage = (String) request.getAttribute("errorMessage"); %>
+<% if (errorMessage != null && !errorMessage.trim().isEmpty()) { %>
+<div id="errorNotification" class="error-notification">
+    <span><%= errorMessage %></span>
+</div>
+<script>
+    function showErrorNotification() {
+        var notification = document.getElementById("errorNotification");
+        notification.classList.add("show");
+
+        setTimeout(function() {
+            notification.classList.remove("show");
+        }, 5000);
+    }
+
+    window.onload = function() {
+        showErrorNotification();
+    }
+</script>
+<% } %>
 
 </body>
 </html>

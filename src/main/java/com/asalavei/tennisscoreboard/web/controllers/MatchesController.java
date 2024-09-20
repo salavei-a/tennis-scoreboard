@@ -1,5 +1,7 @@
 package com.asalavei.tennisscoreboard.web.controllers;
 
+import com.asalavei.tennisscoreboard.exceptions.ValidationException;
+import com.asalavei.tennisscoreboard.validation.scenario.FindByName;
 import com.asalavei.tennisscoreboard.web.dto.PlayerRequestDto;
 import com.asalavei.tennisscoreboard.services.FinishedMatchesPersistenceService;
 import jakarta.servlet.ServletException;
@@ -7,8 +9,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
+import java.util.Set;
 
 @WebServlet("/matches")
 public class MatchesController extends HttpServlet {
@@ -20,26 +27,45 @@ public class MatchesController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        PlayerRequestDto playerRequestDto = PlayerRequestDto.builder()
-                .name(request.getParameter("filter_by_player_name"))
+        int page = parsePageParam(request.getParameter("page"));
+
+        String playerName = request.getParameter("filter_by_player_name");
+
+        PlayerRequestDto player = PlayerRequestDto.builder()
+                .name(playerName)
                 .build();
 
-        String playerName = playerRequestDto.getName();
-        String page = request.getParameter("page");
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        Set<ConstraintViolation<PlayerRequestDto>> violations = validator.validate(player, FindByName.class);
 
-        if (playerName != null) {
-            request.setAttribute("totalPages", service.countTotalPagesByPlayerName(playerName, DEFAULT_SIZE));
-            request.setAttribute("matches", service.findAllByPlayerName(
-                    playerName,
-                    page != null ? Integer.parseInt(request.getParameter("page")) : DEFAULT_PAGE,
-                    DEFAULT_SIZE));
+        if (playerName != null && !violations.isEmpty()) {
+            setMatchesAttributes(request, page);
+
+            for (ConstraintViolation<PlayerRequestDto> violation : violations) {
+                throw new ValidationException(violation.getMessage(), "matches.jsp");
+            }
+        }
+
+        if (!StringUtils.isBlank(playerName)) {
+            setMatchesAttributesByPlayer(request, playerName, page);
         } else {
-            request.setAttribute("totalPages", service.countTotalPages(DEFAULT_SIZE));
-            request.setAttribute("matches", service.findAll(
-                    page != null ? Integer.parseInt(request.getParameter("page")) : DEFAULT_PAGE,
-                    DEFAULT_SIZE));
+            setMatchesAttributes(request, page);
         }
 
         request.getRequestDispatcher("matches.jsp").forward(request, response);
+    }
+
+    private int parsePageParam(String pageParam) {
+        return pageParam != null ? Integer.parseInt(pageParam) : DEFAULT_PAGE;
+    }
+
+    private void setMatchesAttributes(HttpServletRequest request, int page) {
+        request.setAttribute("totalPages", service.countTotalPages(DEFAULT_SIZE));
+        request.setAttribute("matches", service.findAll(page, DEFAULT_SIZE));
+    }
+
+    private void setMatchesAttributesByPlayer(HttpServletRequest request, String playerName, int page) {
+        request.setAttribute("totalPages", service.countTotalPagesByPlayerName(playerName, DEFAULT_SIZE));
+        request.setAttribute("matches", service.findAllByPlayerName(playerName, page, DEFAULT_SIZE));
     }
 }
