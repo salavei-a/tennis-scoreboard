@@ -1,6 +1,6 @@
 package com.asalavei.tennisscoreboard.web.controllers;
 
-import com.asalavei.tennisscoreboard.exceptions.ValidationException;
+import com.asalavei.tennisscoreboard.validation.scenario.DtoValidator;
 import com.asalavei.tennisscoreboard.validation.scenario.FindByName;
 import com.asalavei.tennisscoreboard.web.dto.PlayerRequestDto;
 import com.asalavei.tennisscoreboard.services.FinishedMatchesPersistenceService;
@@ -9,13 +9,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
-import java.util.Set;
 
 @WebServlet("/matches")
 public class MatchesController extends HttpServlet {
@@ -31,22 +26,13 @@ public class MatchesController extends HttpServlet {
 
         String playerName = request.getParameter("filter_by_player_name");
 
-        PlayerRequestDto player = PlayerRequestDto.builder()
-                .name(playerName)
-                .build();
+        if (playerName != null) {
+            PlayerRequestDto player = PlayerRequestDto.builder()
+                    .name(playerName)
+                    .build();
 
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<PlayerRequestDto>> violations = validator.validate(player, FindByName.class);
+            DtoValidator.validate(player, FindByName.class, "matches.jsp");
 
-        if (playerName != null && !violations.isEmpty()) {
-            setMatchesAttributes(request, page);
-
-            for (ConstraintViolation<PlayerRequestDto> violation : violations) {
-                throw new ValidationException(violation.getMessage(), "matches.jsp");
-            }
-        }
-
-        if (!StringUtils.isBlank(playerName)) {
             setMatchesAttributesByPlayer(request, playerName, page);
         } else {
             setMatchesAttributes(request, page);
@@ -56,7 +42,11 @@ public class MatchesController extends HttpServlet {
     }
 
     private int parsePageParam(String pageParam) {
-        return pageParam != null ? Integer.parseInt(pageParam) : DEFAULT_PAGE;
+        try {
+            return pageParam != null ? Integer.parseInt(pageParam) : DEFAULT_PAGE;
+        } catch (NumberFormatException e) {
+            return DEFAULT_PAGE;
+        }
     }
 
     private void setMatchesAttributes(HttpServletRequest request, int page) {
