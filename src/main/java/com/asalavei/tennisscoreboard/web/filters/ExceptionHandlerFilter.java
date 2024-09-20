@@ -20,10 +20,8 @@ public class ExceptionHandlerFilter extends HttpFilter {
         try {
             super.doFilter(request, response, chain);
         } catch (ValidationException e) {
-            log.warning("Validation error: " + e.getMessage());
-
             request.setAttribute("errorMessage", e.getMessage());
-            request.getRequestDispatcher(e.getPagePath()).forward(request, response);
+            request.getRequestDispatcher(e.getPagePath() != null ? e.getPagePath() : "general-error.jsp").forward(request, response);
         }
     }
 }

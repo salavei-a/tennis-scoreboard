@@ -36,6 +36,7 @@ public class OngoingMatchesService {
         UUID uuid = UUID.randomUUID();
 
         ongoingMatches.put(uuid, Match.builder()
+                .uuid(uuid)
                 .firstPlayer(firstPlayer)
                 .secondPlayer(secondPlayer)
                 .build());

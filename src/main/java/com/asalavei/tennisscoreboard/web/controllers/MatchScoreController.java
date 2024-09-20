@@ -1,5 +1,7 @@
 package com.asalavei.tennisscoreboard.web.controllers;
 
+import com.asalavei.tennisscoreboard.validation.scenario.DtoValidator;
+import com.asalavei.tennisscoreboard.validation.scenario.FindById;
 import com.asalavei.tennisscoreboard.web.dto.PlayerRequestDto;
 import com.asalavei.tennisscoreboard.web.mapper.PlayerDtoMapper;
 import com.asalavei.tennisscoreboard.dto.Match;
@@ -45,14 +47,17 @@ public class MatchScoreController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         UUID uuid = UUID.fromString(request.getParameter("uuid"));
+        Integer pointWinnerId = DtoValidator.getValidatedNumber(request.getParameter("player"));
 
         Match match = ongoingMatchesService.getOngoingMatch(uuid);
 
-        PlayerRequestDto playerWinner = PlayerRequestDto.builder()
-                .id(Integer.valueOf(request.getParameter("player")))
+        PlayerRequestDto pointWinner = PlayerRequestDto.builder()
+                .id(pointWinnerId)
                 .build();
 
-        Match calculatedMatch = matchScoreCalculationService.calculate(match, playerMapper.toDto(playerWinner));
+        DtoValidator.validatePointWinner(pointWinner, match, FindById.class);
+
+        Match calculatedMatch = matchScoreCalculationService.calculate(match, playerMapper.toDto(pointWinner));
 
         if (calculatedMatch.getWinner() != null) {
             finishedMatchesPersistenceService.persist(calculatedMatch);
