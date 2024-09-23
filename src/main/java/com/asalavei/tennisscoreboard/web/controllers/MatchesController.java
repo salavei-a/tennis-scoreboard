@@ -25,6 +25,11 @@ public class MatchesController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (request.getAttribute("errorMessage") != null) {
+            request.getRequestDispatcher("matches.jsp").forward(request, response);
+            return;
+        }
+
         int page = parsePageParam(request.getParameter("page"));
 
         String playerName = request.getParameter("filter_by_player_name");
@@ -34,7 +39,7 @@ public class MatchesController extends HttpServlet {
                     .name(playerName)
                     .build();
 
-            DtoValidator.validate(player, FindByName.class, "matches.jsp");
+            DtoValidator.validate(player, FindByName.class);
 
             setMatchesAttributesByPlayer(request, playerName, page);
         } else {

@@ -31,7 +31,12 @@ public class NewMatchController extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (request.getAttribute("errorMessage") != null) {
+            request.getRequestDispatcher("new-match.jsp").forward(request, response);
+            return;
+        }
+
         PlayerRequestDto firstPlayer = PlayerRequestDto.builder()
                 .name(request.getParameter("firstPlayer"))
                 .build();
@@ -40,15 +45,15 @@ public class NewMatchController extends HttpServlet {
                 .name(request.getParameter("secondPlayer"))
                 .build();
 
-        DtoValidator.validate(firstPlayer, Create.class, "new-match.jsp");
-        DtoValidator.validate(secondPlayer, Create.class, "new-match.jsp");
+        DtoValidator.validate(firstPlayer, Create.class);
+        DtoValidator.validate(secondPlayer, Create.class);
 
         MatchRequestDto match = MatchRequestDto.builder()
                 .firstPlayer(firstPlayer)
                 .secondPlayer(secondPlayer)
                 .build();
 
-        DtoValidator.validateMatch(match, Create.class, "new-match.jsp");
+        DtoValidator.validateMatch(match, Create.class);
 
         UUID uuid = ongoingMatchesService.create(mapper.toDto(firstPlayer), mapper.toDto(secondPlayer));
 

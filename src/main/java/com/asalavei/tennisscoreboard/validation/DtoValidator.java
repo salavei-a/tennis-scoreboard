@@ -1,6 +1,8 @@
 package com.asalavei.tennisscoreboard.validation;
 
 import com.asalavei.tennisscoreboard.dto.Match;
+import com.asalavei.tennisscoreboard.exceptions.ForbiddenException;
+import com.asalavei.tennisscoreboard.exceptions.NotFoundException;
 import com.asalavei.tennisscoreboard.web.dto.MatchRequestDto;
 import com.asalavei.tennisscoreboard.web.dto.PlayerRequestDto;
 import jakarta.validation.ConstraintViolation;
@@ -19,21 +21,20 @@ public class DtoValidator {
 
     private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
-    private static final String ERROR_OCCURRED = "An error occurred";
-    private static final String INVALID_URL = "Invalid URL";
+    private static final String NOT_FOUND = "Not found";
+    private static final String FORBIDDEN = "Forbidden";
 
     private DtoValidator() {
     }
 
     public static void validatePointWinner(PlayerRequestDto pointWinner, Match match, Class<?> group) {
-        validate(pointWinner, group, null);
+        validate(pointWinner, group);
 
         Integer pointWinnerId = pointWinner.getId();
 
         if (isPlayerNotInMatch(pointWinnerId, match)) {
-            log.info(String.format("Validation error: Player with id=%s is not participating in match=%s",
-                    pointWinnerId, match));
-            throw new ValidationException(ERROR_OCCURRED);
+            log.info(String.format("Player with id=%s is not participating in match=%s", pointWinnerId, match));
+            throw new ForbiddenException(FORBIDDEN);
         }
     }
 
@@ -44,12 +45,13 @@ public class DtoValidator {
         ).contains(pointWinner);
     }
 
-    public static void validateMatch(MatchRequestDto match, Class<?> group, String pagePath) {
-        validate(match, group, pagePath);
+    public static void validateMatch(MatchRequestDto match, Class<?> group) {
+        validate(match, group);
 
         if (arePlayersSame(match)) {
-            log.info(String.format("Validation error: First player and second player cannot be the same. %s", match));
-            throw new ValidationException("First player and second player cannot be the same", pagePath);
+            String message = "First player and second player cannot be the same";
+            log.info(String.format("%s: %s", message, match));
+            throw new ValidationException(message);
         }
     }
 
@@ -57,12 +59,12 @@ public class DtoValidator {
         return match.getFirstPlayer().getName().equals(match.getSecondPlayer().getName());
     }
 
-    public static void validateMatch(MatchRequestDto matchRequestDto, Match match, Class<?> group, String pagePath) {
-        validate(matchRequestDto, group, pagePath);
+    public static void validateMatch(MatchRequestDto matchRequestDto, Match match, Class<?> group) {
+        validate(matchRequestDto, group);
 
         if (isMatchNotFound(matchRequestDto, match)) {
-            log.info(String.format("Validation error: No current match found with UUID=%s", matchRequestDto.getUuid()));
-            throw new ValidationException(INVALID_URL, pagePath);
+            log.info(String.format("No current match found with UUID=%s", matchRequestDto.getUuid()));
+            throw new NotFoundException(NOT_FOUND);
         }
     }
 
@@ -70,14 +72,14 @@ public class DtoValidator {
         return match.getUuid() == null || !match.getUuid().equals(matchRequestDto.getUuid());
     }
 
-    public static <T> void validate(T dto, Class<?> group, String pagePath) {
+    public static <T> void validate(T dto, Class<?> group) {
         Set<ConstraintViolation<T>> violations = validator.validate(dto, group);
 
         if (!violations.isEmpty()) {
             String violationsMessage = getViolationsMessage(violations);
 
-            log.info(String.format("Validation error: %s. %s", violationsMessage, dto));
-            throw new ValidationException(violationsMessage, pagePath);
+            log.info(String.format("Validation failed for %s. Violations: %s", dto, violationsMessage));
+            throw new ValidationException(violationsMessage);
         }
     }
 
@@ -91,17 +93,17 @@ public class DtoValidator {
         try {
             return Integer.valueOf(param);
         } catch (NumberFormatException e) {
-            log.info(String.format("Validation error: '%s' is not a valid number", param));
-            throw new ValidationException(ERROR_OCCURRED);
+            log.info(String.format("Invalid number: %s", param));
+            throw new ForbiddenException(FORBIDDEN);
         }
     }
 
-    public static UUID getValidatedUuid(String uuidParam, String pagePath) {
+    public static UUID getValidatedUuid(String uuidParam) {
         try {
             return UUID.fromString(uuidParam);
         } catch (IllegalArgumentException e) {
-            log.info(String.format("Validation error: '%s' is not a valid UUID", uuidParam));
-            throw new ValidationException(INVALID_URL, pagePath);
+            log.info(String.format("Invalid UUID: %s", uuidParam));
+            throw new NotFoundException(NOT_FOUND);
         }
     }
 }

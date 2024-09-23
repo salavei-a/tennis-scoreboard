@@ -41,7 +41,7 @@ public class MatchScoreController extends HttpServlet {
             return;
         }
 
-        UUID uuid = DtoValidator.getValidatedUuid(uuidParameter, "404.jsp");
+        UUID uuid = DtoValidator.getValidatedUuid(uuidParameter);
 
         MatchRequestDto matchRequestDto = MatchRequestDto.builder()
                 .uuid(uuid)
@@ -49,7 +49,7 @@ public class MatchScoreController extends HttpServlet {
 
         Match match = ongoingMatchesService.getOngoingMatch(uuid);
 
-        DtoValidator.validateMatch(matchRequestDto, match, Find.class, "404.jsp");
+        DtoValidator.validateMatch(matchRequestDto, match, Find.class);
 
         request.setAttribute("match", matchMapper.toResponseDto(match));
         request.setAttribute("uuid", uuid);
@@ -58,7 +58,7 @@ public class MatchScoreController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        UUID uuid = DtoValidator.getValidatedUuid(request.getParameter("uuid"), "404.jsp");
+        UUID uuid = DtoValidator.getValidatedUuid(request.getParameter("uuid"));
         Integer pointWinnerId = DtoValidator.getValidatedNumber(request.getParameter("player"));
 
         Match match = ongoingMatchesService.getOngoingMatch(uuid);
