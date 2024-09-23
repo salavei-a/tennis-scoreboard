@@ -1,6 +1,6 @@
 package com.asalavei.tennisscoreboard.web.controllers;
 
-import com.asalavei.tennisscoreboard.validation.DtoValidator;
+import com.asalavei.tennisscoreboard.validation.DataValidator;
 import com.asalavei.tennisscoreboard.validation.scenario.FindByName;
 import com.asalavei.tennisscoreboard.web.dto.PlayerRequestDto;
 import com.asalavei.tennisscoreboard.services.FinishedMatchesPersistenceService;
@@ -39,7 +39,7 @@ public class MatchesController extends HttpServlet {
                     .name(playerName)
                     .build();
 
-            DtoValidator.validate(player, FindByName.class);
+            DataValidator.validate(player, FindByName.class);
 
             setMatchesAttributesByPlayer(request, playerName, page);
         } else {

@@ -1,6 +1,6 @@
 package com.asalavei.tennisscoreboard.web.controllers;
 
-import com.asalavei.tennisscoreboard.validation.DtoValidator;
+import com.asalavei.tennisscoreboard.validation.DataValidator;
 import com.asalavei.tennisscoreboard.validation.scenario.Find;
 import com.asalavei.tennisscoreboard.validation.scenario.FindById;
 import com.asalavei.tennisscoreboard.web.dto.MatchRequestDto;
@@ -41,7 +41,7 @@ public class MatchScoreController extends HttpServlet {
             return;
         }
 
-        UUID uuid = DtoValidator.getValidatedUuid(uuidParameter);
+        UUID uuid = DataValidator.getValidatedUuid(uuidParameter);
 
         MatchRequestDto matchRequestDto = MatchRequestDto.builder()
                 .uuid(uuid)
@@ -49,7 +49,7 @@ public class MatchScoreController extends HttpServlet {
 
         Match match = ongoingMatchesService.getOngoingMatch(uuid);
 
-        DtoValidator.validateMatch(matchRequestDto, match, Find.class);
+        DataValidator.validateMatch(matchRequestDto, match, Find.class);
 
         request.setAttribute("match", matchMapper.toResponseDto(match));
         request.setAttribute("uuid", uuid);
@@ -58,8 +58,8 @@ public class MatchScoreController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        UUID uuid = DtoValidator.getValidatedUuid(request.getParameter("uuid"));
-        Integer pointWinnerId = DtoValidator.getValidatedNumber(request.getParameter("player"));
+        UUID uuid = DataValidator.getValidatedUuid(request.getParameter("uuid"));
+        Integer pointWinnerId = DataValidator.getValidatedNumber(request.getParameter("player"));
 
         Match match = ongoingMatchesService.getOngoingMatch(uuid);
 
@@ -67,7 +67,7 @@ public class MatchScoreController extends HttpServlet {
                 .id(pointWinnerId)
                 .build();
 
-        DtoValidator.validatePointWinner(pointWinner, match, FindById.class);
+        DataValidator.validatePointWinner(pointWinner, match, FindById.class);
 
         Match calculatedMatch = matchScoreCalculationService.calculate(match, playerMapper.toDto(pointWinner));
 

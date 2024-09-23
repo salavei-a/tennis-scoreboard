@@ -1,7 +1,7 @@
 package com.asalavei.tennisscoreboard.web.controllers;
 
 import com.asalavei.tennisscoreboard.validation.scenario.Create;
-import com.asalavei.tennisscoreboard.validation.DtoValidator;
+import com.asalavei.tennisscoreboard.validation.DataValidator;
 import com.asalavei.tennisscoreboard.web.dto.MatchRequestDto;
 import com.asalavei.tennisscoreboard.web.dto.PlayerRequestDto;
 import com.asalavei.tennisscoreboard.web.mapper.PlayerDtoMapper;
@@ -45,15 +45,15 @@ public class NewMatchController extends HttpServlet {
                 .name(request.getParameter("secondPlayer"))
                 .build();
 
-        DtoValidator.validate(firstPlayer, Create.class);
-        DtoValidator.validate(secondPlayer, Create.class);
+        DataValidator.validate(firstPlayer, Create.class);
+        DataValidator.validate(secondPlayer, Create.class);
 
         MatchRequestDto match = MatchRequestDto.builder()
                 .firstPlayer(firstPlayer)
                 .secondPlayer(secondPlayer)
                 .build();
 
-        DtoValidator.validateMatch(match, Create.class);
+        DataValidator.validateMatch(match, Create.class);
 
         UUID uuid = ongoingMatchesService.create(mapper.toDto(firstPlayer), mapper.toDto(secondPlayer));
 

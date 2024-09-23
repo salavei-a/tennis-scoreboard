@@ -17,14 +17,14 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Log
-public class DtoValidator {
+public class DataValidator {
 
     private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     private static final String NOT_FOUND = "Not found";
     private static final String FORBIDDEN = "Forbidden";
 
-    private DtoValidator() {
+    private DataValidator() {
     }
 
     public static void validatePointWinner(PlayerRequestDto pointWinner, Match match, Class<?> group) {
