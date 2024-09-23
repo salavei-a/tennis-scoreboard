@@ -1,7 +1,6 @@
 package com.asalavei.tennisscoreboard.dbaccess.entities;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.Check;
 
@@ -22,17 +21,14 @@ public class MatchEntity {
     @Column(name = "id")
     private Integer id;
 
-    @NotNull
     @ManyToOne(optional = false)
     @JoinColumn(name = "first_player_id", nullable = false)
     private PlayerEntity firstPlayer;
 
-    @NotNull
     @ManyToOne(optional = false)
     @JoinColumn(name = "second_player_id", nullable = false)
     private PlayerEntity secondPlayer;
 
-    @NotNull
     @ManyToOne(optional = false)
     @JoinColumn(name = "winner_id", nullable = false)
     private PlayerEntity winner;
