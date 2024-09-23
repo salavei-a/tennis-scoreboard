@@ -1,6 +1,6 @@
-<%@ page import="com.asalavei.tennisscoreboard.dto.Match" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.nio.charset.StandardCharsets" %>
+<%@ page import="com.asalavei.tennisscoreboard.web.dto.MatchResponseDto" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -176,9 +176,9 @@
         </thead>
         <tbody>
         <%
-            List<Match> matches = (List<Match>) request.getAttribute("matches");
+            List<MatchResponseDto> matches = (List<MatchResponseDto>) request.getAttribute("matches");
             if (matches != null && !matches.isEmpty()) {
-                for (Match match : matches) {
+                for (MatchResponseDto match : matches) {
         %>
         <tr>
             <td><%= match.getFirstPlayer().getName() %> vs <%= match.getSecondPlayer().getName() %></td>

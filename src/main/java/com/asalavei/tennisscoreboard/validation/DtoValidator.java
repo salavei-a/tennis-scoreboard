@@ -19,6 +19,9 @@ public class DtoValidator {
 
     private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
+    private static final String ERROR_OCCURRED = "An error occurred";
+    private static final String INVALID_URL = "Invalid URL";
+
     private DtoValidator() {
     }
 
@@ -27,11 +30,18 @@ public class DtoValidator {
 
         Integer pointWinnerId = pointWinner.getId();
 
-        if (!isPlayerInMatch(pointWinnerId, match)) {
+        if (isPlayerNotInMatch(pointWinnerId, match)) {
             log.info(String.format("Validation error: Player with id=%s is not participating in match=%s",
                     pointWinnerId, match));
-            throw new ValidationException("Player is not participating in this match");
+            throw new ValidationException(ERROR_OCCURRED);
         }
+    }
+
+    private static boolean isPlayerNotInMatch(Integer pointWinner, Match match) {
+        return !Arrays.asList(
+                match.getFirstPlayer().getId(),
+                match.getSecondPlayer().getId()
+        ).contains(pointWinner);
     }
 
     public static void validateMatch(MatchRequestDto match, Class<?> group, String pagePath) {
@@ -45,6 +55,19 @@ public class DtoValidator {
 
     private static boolean arePlayersSame(MatchRequestDto match) {
         return match.getFirstPlayer().getName().equals(match.getSecondPlayer().getName());
+    }
+
+    public static void validateMatch(MatchRequestDto matchRequestDto, Match match, Class<?> group, String pagePath) {
+        validate(matchRequestDto, group, pagePath);
+
+        if (isMatchNotFound(matchRequestDto, match)) {
+            log.info(String.format("Validation error: No current match found with UUID=%s", matchRequestDto.getUuid()));
+            throw new ValidationException(INVALID_URL, pagePath);
+        }
+    }
+
+    private static boolean isMatchNotFound(MatchRequestDto matchRequestDto, Match match) {
+        return match.getUuid() == null || !match.getUuid().equals(matchRequestDto.getUuid());
     }
 
     public static <T> void validate(T dto, Class<?> group, String pagePath) {
@@ -64,28 +87,21 @@ public class DtoValidator {
                 .collect(Collectors.joining(", "));
     }
 
-    private static boolean isPlayerInMatch(Integer pointWinner, Match match) {
-        return Arrays.asList(
-                match.getFirstPlayer().getId(),
-                match.getSecondPlayer().getId()
-        ).contains(pointWinner);
-    }
-
     public static Integer getValidatedNumber(String param) {
         try {
             return Integer.valueOf(param);
         } catch (NumberFormatException e) {
             log.info(String.format("Validation error: '%s' is not a valid number", param));
-            throw new ValidationException("An error occurred. Please try again");
+            throw new ValidationException(ERROR_OCCURRED);
         }
     }
 
-    public static UUID getValidatedUuid(String uuidParam) {
+    public static UUID getValidatedUuid(String uuidParam, String pagePath) {
         try {
             return UUID.fromString(uuidParam);
         } catch (IllegalArgumentException e) {
             log.info(String.format("Validation error: '%s' is not a valid UUID", uuidParam));
-            throw new ValidationException("An error occurred. Please try again");
+            throw new ValidationException(INVALID_URL, pagePath);
         }
     }
 }

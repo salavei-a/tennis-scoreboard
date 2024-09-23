@@ -44,6 +44,7 @@ public class MatchScoreCalculationService {
 
         if (isMatchFinished(match)) {
             return Match.builder()
+                    .uuid(match.getUuid())
                     .firstPlayer(firstPlayer)
                     .secondPlayer(secondPlayer)
                     .winner(pointWinner)
@@ -51,6 +52,7 @@ public class MatchScoreCalculationService {
         }
 
         return Match.builder()
+                .uuid(match.getUuid())
                 .firstPlayer(firstPlayer)
                 .secondPlayer(secondPlayer)
                 .build();

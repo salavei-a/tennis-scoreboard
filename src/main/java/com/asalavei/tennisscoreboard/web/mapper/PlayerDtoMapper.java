@@ -7,5 +7,5 @@ import org.mapstruct.Mapper;
 @Mapper
 public interface PlayerDtoMapper {
 
-    Player toDto(PlayerRequestDto requestDto);
+    Player toDto(PlayerRequestDto playerRequestDto);
 }

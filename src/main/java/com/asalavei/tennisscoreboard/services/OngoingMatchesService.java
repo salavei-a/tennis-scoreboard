@@ -45,7 +45,7 @@ public class OngoingMatchesService {
     }
 
     public Match getOngoingMatch(UUID uuid) {
-        return ongoingMatches.get(uuid);
+        return ongoingMatches.getOrDefault(uuid, Match.builder().build());
     }
 
     public void removeMatch(UUID uuid) {

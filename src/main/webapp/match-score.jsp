@@ -1,7 +1,7 @@
-<%@ page import="com.asalavei.tennisscoreboard.dto.Match" %>
+<%@ page import="com.asalavei.tennisscoreboard.web.dto.MatchResponseDto" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%
-    Match match = (Match) request.getAttribute("match");
+    MatchResponseDto match = (MatchResponseDto) request.getAttribute("match");
 %>
 <!DOCTYPE html>
 <html lang="en">
