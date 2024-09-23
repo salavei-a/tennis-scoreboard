@@ -1,6 +1,7 @@
-package com.asalavei.tennisscoreboard.validation.scenario;
+package com.asalavei.tennisscoreboard.validation;
 
 import com.asalavei.tennisscoreboard.dto.Match;
+import com.asalavei.tennisscoreboard.web.dto.MatchRequestDto;
 import com.asalavei.tennisscoreboard.web.dto.PlayerRequestDto;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -10,6 +11,7 @@ import lombok.extern.java.Log;
 
 import java.util.Arrays;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Log
@@ -30,6 +32,19 @@ public class DtoValidator {
                     pointWinnerId, match));
             throw new ValidationException("Player is not participating in this match");
         }
+    }
+
+    public static void validateMatch(MatchRequestDto match, Class<?> group, String pagePath) {
+        validate(match, group, pagePath);
+
+        if (arePlayersSame(match)) {
+            log.info(String.format("Validation error: First player and second player cannot be the same. %s", match));
+            throw new ValidationException("First player and second player cannot be the same", pagePath);
+        }
+    }
+
+    private static boolean arePlayersSame(MatchRequestDto match) {
+        return match.getFirstPlayer().getName().equals(match.getSecondPlayer().getName());
     }
 
     public static <T> void validate(T dto, Class<?> group, String pagePath) {
@@ -61,6 +76,15 @@ public class DtoValidator {
             return Integer.valueOf(param);
         } catch (NumberFormatException e) {
             log.info(String.format("Validation error: '%s' is not a valid number", param));
+            throw new ValidationException("An error occurred. Please try again");
+        }
+    }
+
+    public static UUID getValidatedUuid(String uuidParam) {
+        try {
+            return UUID.fromString(uuidParam);
+        } catch (IllegalArgumentException e) {
+            log.info(String.format("Validation error: '%s' is not a valid UUID", uuidParam));
             throw new ValidationException("An error occurred. Please try again");
         }
     }

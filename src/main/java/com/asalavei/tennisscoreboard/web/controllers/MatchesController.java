@@ -1,6 +1,6 @@
 package com.asalavei.tennisscoreboard.web.controllers;
 
-import com.asalavei.tennisscoreboard.validation.scenario.DtoValidator;
+import com.asalavei.tennisscoreboard.validation.DtoValidator;
 import com.asalavei.tennisscoreboard.validation.scenario.FindByName;
 import com.asalavei.tennisscoreboard.web.dto.PlayerRequestDto;
 import com.asalavei.tennisscoreboard.services.FinishedMatchesPersistenceService;
