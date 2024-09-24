@@ -1,6 +1,5 @@
 package com.asalavei.tennisscoreboard.services;
 
-import com.asalavei.tennisscoreboard.dbaccess.entities.PlayerEntity;
 import com.asalavei.tennisscoreboard.dbaccess.mapper.PlayerEntityMapper;
 import com.asalavei.tennisscoreboard.dbaccess.repositories.PlayerHibernateRepository;
 import com.asalavei.tennisscoreboard.dbaccess.repositories.PlayerRepository;
@@ -20,32 +19,33 @@ public class OngoingMatchesService {
 
     private final PlayerEntityMapper mapper = Mappers.getMapper(PlayerEntityMapper.class);
 
-    public UUID create(Player firstPlayerToPlay, Player secondPlayerToPlay) {
-        Optional<PlayerEntity> firstPlayerFound = playerRepository.findByName(firstPlayerToPlay.getName());
-        Optional<PlayerEntity> secondPlayerFound = playerRepository.findByName(secondPlayerToPlay.getName());
+    public UUID create(Player firstPlayer, Player secondPlayer) {
+        Player firstPlayerPersisted = getOrCreatePlayer(firstPlayer);
+        Player secondPlayerPersisted = getOrCreatePlayer(secondPlayer);
 
-        PlayerEntity firstPlayerEntity = firstPlayerFound.orElseGet(() -> playerRepository.save(mapper.toEntity(firstPlayerToPlay)));
-        PlayerEntity secondPlayerEntity = secondPlayerFound.orElseGet(() -> playerRepository.save(mapper.toEntity(secondPlayerToPlay)));
-
-        Player firstPlayer = mapper.toDto(firstPlayerEntity);
-        Player secondPlayer = mapper.toDto(secondPlayerEntity);
-
-        firstPlayer.setGamePoints("0");
-        secondPlayer.setGamePoints("0");
+        firstPlayerPersisted.setGamePoints("0");
+        secondPlayerPersisted.setGamePoints("0");
 
         UUID uuid = UUID.randomUUID();
 
         ongoingMatches.put(uuid, Match.builder()
                 .uuid(uuid)
-                .firstPlayer(firstPlayer)
-                .secondPlayer(secondPlayer)
+                .firstPlayer(firstPlayerPersisted)
+                .secondPlayer(secondPlayerPersisted)
                 .build());
 
         return uuid;
     }
 
-    public Match getOngoingMatch(UUID uuid) {
-        return ongoingMatches.getOrDefault(uuid, Match.builder().build());
+    private Player getOrCreatePlayer(Player player) {
+        return playerRepository.findByName(player.getName())
+                .map(mapper::toDto)
+                .orElseGet(() -> mapper.toDto(playerRepository.save(mapper.toEntity(player)))
+                );
+    }
+
+    public Optional<Match> getOngoingMatch(UUID uuid) {
+        return Optional.ofNullable(ongoingMatches.get(uuid));
     }
 
     public void removeMatch(UUID uuid) {

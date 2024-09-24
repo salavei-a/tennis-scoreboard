@@ -1,5 +1,6 @@
 package com.asalavei.tennisscoreboard.web.controllers;
 
+import com.asalavei.tennisscoreboard.exceptions.NotFoundException;
 import com.asalavei.tennisscoreboard.validation.DataValidator;
 import com.asalavei.tennisscoreboard.validation.scenario.Find;
 import com.asalavei.tennisscoreboard.validation.scenario.FindById;
@@ -21,6 +22,8 @@ import org.mapstruct.factory.Mappers;
 
 import java.io.IOException;
 import java.util.UUID;
+
+import static com.asalavei.tennisscoreboard.validation.DataValidator.NOT_FOUND;
 
 @WebServlet("/match-score")
 public class MatchScoreController extends HttpServlet {
@@ -47,7 +50,8 @@ public class MatchScoreController extends HttpServlet {
                 .uuid(uuid)
                 .build();
 
-        Match match = ongoingMatchesService.getOngoingMatch(uuid);
+        Match match = ongoingMatchesService.getOngoingMatch(uuid)
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND));
 
         DataValidator.validateMatch(matchRequestDto, match, Find.class);
 
@@ -61,7 +65,8 @@ public class MatchScoreController extends HttpServlet {
         UUID uuid = DataValidator.getValidatedUuid(request.getParameter("uuid"));
         Integer pointWinnerId = DataValidator.getValidatedNumber(request.getParameter("player"));
 
-        Match match = ongoingMatchesService.getOngoingMatch(uuid);
+        Match match = ongoingMatchesService.getOngoingMatch(uuid)
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND));
 
         PlayerRequestDto pointWinner = PlayerRequestDto.builder()
                 .id(pointWinnerId)
