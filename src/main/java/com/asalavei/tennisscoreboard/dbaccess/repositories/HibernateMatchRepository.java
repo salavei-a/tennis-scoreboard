@@ -1,6 +1,6 @@
 package com.asalavei.tennisscoreboard.dbaccess.repositories;
 
-import com.asalavei.tennisscoreboard.dbaccess.config.HibernateUtil;
+import com.asalavei.tennisscoreboard.dbaccess.config.HibernateConfig;
 import com.asalavei.tennisscoreboard.dbaccess.entities.MatchEntity;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -11,7 +11,7 @@ import java.util.List;
 
 public class HibernateMatchRepository implements MatchRepository {
 
-    private static final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+    private static final SessionFactory sessionFactory = HibernateConfig.getSessionFactory();
 
     @Override
     public MatchEntity save(MatchEntity match) {

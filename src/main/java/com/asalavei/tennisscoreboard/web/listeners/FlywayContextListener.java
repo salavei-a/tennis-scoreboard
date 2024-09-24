@@ -1,6 +1,6 @@
 package com.asalavei.tennisscoreboard.web.listeners;
 
-import com.asalavei.tennisscoreboard.dbaccess.config.HibernateUtil;
+import com.asalavei.tennisscoreboard.dbaccess.config.HibernateConfig;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
@@ -14,7 +14,7 @@ public class FlywayContextListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         Flyway flyway = Flyway.configure()
-                .dataSource(HibernateUtil.getHikariDataSource())
+                .dataSource(HibernateConfig.getHikariDataSource())
                 .load();
 
         flyway.migrate();

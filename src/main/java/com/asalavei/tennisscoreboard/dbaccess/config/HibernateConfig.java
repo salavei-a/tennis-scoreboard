@@ -12,13 +12,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class HibernateUtil {
+public class HibernateConfig {
 
     private static final SessionFactory sessionFactory = buildSessionFactory();
 
     private static final HikariDataSource hikariDataSource = configureDataSource();
 
-    private HibernateUtil() {
+    private HibernateConfig() {
     }
 
     private static SessionFactory buildSessionFactory() {
@@ -28,14 +28,6 @@ public class HibernateUtil {
         configuration.addAnnotatedClass(MatchEntity.class);
 
         return configuration.buildSessionFactory();
-    }
-
-    public static SessionFactory getSessionFactory() {
-        return sessionFactory;
-    }
-
-    public static HikariDataSource getHikariDataSource() {
-        return hikariDataSource;
     }
 
     private static HikariDataSource configureDataSource() {
@@ -56,10 +48,18 @@ public class HibernateUtil {
         return new HikariDataSource(config);
     }
 
-    public static Properties getProperties() {
+    public static SessionFactory getSessionFactory() {
+        return sessionFactory;
+    }
+
+    public static HikariDataSource getHikariDataSource() {
+        return hikariDataSource;
+    }
+
+    private static Properties getProperties() {
         Properties properties = new Properties();
 
-        try (InputStream inputStream = HibernateUtil.class.getClassLoader().getResourceAsStream("hibernate.properties")) {
+        try (InputStream inputStream = HibernateConfig.class.getClassLoader().getResourceAsStream("hibernate.properties")) {
             properties.load(inputStream);
         } catch (IOException e) {
             throw new AppRuntimeException(e);
