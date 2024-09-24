@@ -1,47 +1,22 @@
 package com.asalavei.tennisscoreboard.dbaccess.repositories;
 
-import com.asalavei.tennisscoreboard.dbaccess.config.HibernateConfig;
 import com.asalavei.tennisscoreboard.dbaccess.entities.MatchEntity;
 import com.asalavei.tennisscoreboard.exceptions.DatabaseOperationException;
-import org.hibernate.HibernateException;
+import jakarta.persistence.PersistenceException;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import java.util.List;
 
-public class HibernateMatchRepository implements MatchRepository {
-
-    private static final SessionFactory sessionFactory = HibernateConfig.getSessionFactory();
-
-    private static final String ERROR_OCCURRED = "Error occurred while performing database operation";
-
-    @Override
-    public MatchEntity save(MatchEntity match) {
-        Transaction transaction = null;
-
-        try (Session session = sessionFactory.getCurrentSession()) {
-            transaction = session.beginTransaction();
-
-            session.persist(match);
-
-            transaction.commit();
-
-            return match;
-        } catch (Exception e) {
-            if (transaction != null && transaction.isActive()) {
-                transaction.rollback();
-            }
-
-            throw new DatabaseOperationException(ERROR_OCCURRED, e);
-        }
-    }
+public class HibernateMatchRepository extends HibernateBaseRepository<MatchEntity> implements MatchRepository {
 
     @Override
     public List<MatchEntity> findAll(int pageNumber, int pageSize) {
+        Session session = null;
         Transaction transaction = null;
 
-        try (Session session = sessionFactory.getCurrentSession()) {
+        try {
+            session = sessionFactory.getCurrentSession();
             transaction = session.beginTransaction();
 
             String query = "from MatchEntity m join fetch m.firstPlayer join fetch m.secondPlayer order by m.id desc";
@@ -54,20 +29,21 @@ public class HibernateMatchRepository implements MatchRepository {
             transaction.commit();
 
             return matches;
-        } catch (HibernateException e) {
-            if (transaction != null && transaction.isActive()) {
-                transaction.rollback();
-            }
-
+        } catch (PersistenceException e) {
+            rollbackTransaction(transaction);
             throw new DatabaseOperationException(ERROR_OCCURRED, e);
+        } finally {
+            closeSession(session);
         }
     }
 
     @Override
     public List<MatchEntity> findAllByPlayerName(String name, int pageNumber, int pageSize) {
+        Session session = null;
         Transaction transaction = null;
 
-        try (Session session = sessionFactory.getCurrentSession()) {
+        try {
+            session = sessionFactory.getCurrentSession();
             transaction = session.beginTransaction();
 
             String query = "from MatchEntity m join fetch m.firstPlayer fp join fetch m.secondPlayer sp " +
@@ -82,20 +58,21 @@ public class HibernateMatchRepository implements MatchRepository {
             transaction.commit();
 
             return matches;
-        } catch (HibernateException e) {
-            if (transaction != null && transaction.isActive()) {
-                transaction.rollback();
-            }
-
+        } catch (PersistenceException e) {
+            rollbackTransaction(transaction);
             throw new DatabaseOperationException(ERROR_OCCURRED, e);
+        } finally {
+            closeSession(session);
         }
     }
 
     @Override
     public int countTotalPages(int pageSize) {
+        Session session = null;
         Transaction transaction = null;
 
-        try (Session session = sessionFactory.getCurrentSession()) {
+        try {
+            session = sessionFactory.getCurrentSession();
             transaction = session.beginTransaction();
 
             int totalPages;
@@ -108,20 +85,21 @@ public class HibernateMatchRepository implements MatchRepository {
             transaction.commit();
 
             return totalPages;
-        } catch (HibernateException e) {
-            if (transaction != null && transaction.isActive()) {
-                transaction.rollback();
-            }
-
+        } catch (PersistenceException e) {
+            rollbackTransaction(transaction);
             throw new DatabaseOperationException(ERROR_OCCURRED, e);
+        } finally {
+            closeSession(session);
         }
     }
 
     @Override
     public int countTotalPagesByPlayerName(String name, int pageSize) {
+        Session session = null;
         Transaction transaction = null;
 
-        try (Session session = sessionFactory.getCurrentSession()) {
+        try {
+            session = sessionFactory.getCurrentSession();
             transaction = session.beginTransaction();
 
             int totalPages;
@@ -139,12 +117,11 @@ public class HibernateMatchRepository implements MatchRepository {
             transaction.commit();
 
             return totalPages;
-        } catch (HibernateException e) {
-            if (transaction != null && transaction.isActive()) {
-                transaction.rollback();
-            }
-
+        } catch (PersistenceException e) {
+            rollbackTransaction(transaction);
             throw new DatabaseOperationException(ERROR_OCCURRED, e);
+        } finally {
+            closeSession(session);
         }
     }
 }
