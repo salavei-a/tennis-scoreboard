@@ -2,6 +2,7 @@ package com.asalavei.tennisscoreboard.dbaccess.repositories;
 
 import com.asalavei.tennisscoreboard.dbaccess.config.HibernateConfig;
 import com.asalavei.tennisscoreboard.dbaccess.entities.MatchEntity;
+import com.asalavei.tennisscoreboard.exceptions.DatabaseOperationException;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -12,6 +13,8 @@ import java.util.List;
 public class HibernateMatchRepository implements MatchRepository {
 
     private static final SessionFactory sessionFactory = HibernateConfig.getSessionFactory();
+
+    private static final String ERROR_OCCURRED = "Error occurred while performing database operation";
 
     @Override
     public MatchEntity save(MatchEntity match) {
@@ -30,7 +33,7 @@ public class HibernateMatchRepository implements MatchRepository {
                 transaction.rollback();
             }
 
-            throw new RuntimeException(e); // TODO: handle custom exception
+            throw new DatabaseOperationException(ERROR_OCCURRED, e);
         }
     }
 
@@ -56,7 +59,7 @@ public class HibernateMatchRepository implements MatchRepository {
                 transaction.rollback();
             }
 
-            throw new RuntimeException(e); // TODO: handle custom exception
+            throw new DatabaseOperationException(ERROR_OCCURRED, e);
         }
     }
 
@@ -84,7 +87,7 @@ public class HibernateMatchRepository implements MatchRepository {
                 transaction.rollback();
             }
 
-            throw new RuntimeException(e); // TODO: handle custom exception
+            throw new DatabaseOperationException(ERROR_OCCURRED, e);
         }
     }
 
@@ -110,7 +113,7 @@ public class HibernateMatchRepository implements MatchRepository {
                 transaction.rollback();
             }
 
-            throw new RuntimeException(e); // TODO: handle custom exception
+            throw new DatabaseOperationException(ERROR_OCCURRED, e);
         }
     }
 
@@ -141,7 +144,7 @@ public class HibernateMatchRepository implements MatchRepository {
                 transaction.rollback();
             }
 
-            throw new RuntimeException(e); // TODO: handle custom exception
+            throw new DatabaseOperationException(ERROR_OCCURRED, e);
         }
     }
 }

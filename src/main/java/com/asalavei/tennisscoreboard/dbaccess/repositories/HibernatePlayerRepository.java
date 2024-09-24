@@ -2,6 +2,7 @@ package com.asalavei.tennisscoreboard.dbaccess.repositories;
 
 import com.asalavei.tennisscoreboard.dbaccess.config.HibernateConfig;
 import com.asalavei.tennisscoreboard.dbaccess.entities.PlayerEntity;
+import com.asalavei.tennisscoreboard.exceptions.DatabaseOperationException;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -12,6 +13,8 @@ import java.util.Optional;
 public class HibernatePlayerRepository implements PlayerRepository {
 
     private static final SessionFactory sessionFactory = HibernateConfig.getSessionFactory();
+
+    private static final String ERROR_OCCURRED = "Error occurred while performing database operation";
 
     @Override
     public PlayerEntity save(PlayerEntity entity) {
@@ -30,7 +33,7 @@ public class HibernatePlayerRepository implements PlayerRepository {
                 transaction.rollback();
             }
 
-            throw new RuntimeException(e); // TODO: handle custom exception
+            throw new DatabaseOperationException(ERROR_OCCURRED, e);
         }
     }
 
@@ -41,7 +44,7 @@ public class HibernatePlayerRepository implements PlayerRepository {
         try (Session session = sessionFactory.getCurrentSession()) {
             transaction = session.beginTransaction();
 
-            PlayerEntity playerEntity = session.createQuery("FROM PlayerEntity WHERE name = :name", PlayerEntity.class)
+            PlayerEntity playerEntity = session.createQuery("from PlayerEntity where name = :name", PlayerEntity.class)
                     .setParameter("name", name)
                     .uniqueResult();
 
@@ -53,7 +56,7 @@ public class HibernatePlayerRepository implements PlayerRepository {
                 transaction.rollback();
             }
 
-            throw new RuntimeException(e); // TODO: handle custom exception
+            throw new DatabaseOperationException(ERROR_OCCURRED, e);
         }
     }
 }
