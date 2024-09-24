@@ -2,7 +2,7 @@ package com.asalavei.tennisscoreboard.services;
 
 import com.asalavei.tennisscoreboard.dbaccess.entities.PlayerEntity;
 import com.asalavei.tennisscoreboard.dbaccess.mapper.PlayerEntityMapper;
-import com.asalavei.tennisscoreboard.dbaccess.repositories.HibernatePlayerRepository;
+import com.asalavei.tennisscoreboard.dbaccess.repositories.PlayerHibernateRepository;
 import com.asalavei.tennisscoreboard.dbaccess.repositories.PlayerRepository;
 import com.asalavei.tennisscoreboard.dto.Match;
 import com.asalavei.tennisscoreboard.dto.Player;
@@ -16,7 +16,7 @@ public class OngoingMatchesService {
 
     private static final ConcurrentHashMap<UUID, Match> ongoingMatches = new ConcurrentHashMap<>();
 
-    private final PlayerRepository playerRepository = new HibernatePlayerRepository();
+    private final PlayerRepository playerRepository = new PlayerHibernateRepository();
 
     private final PlayerEntityMapper mapper = Mappers.getMapper(PlayerEntityMapper.class);
 

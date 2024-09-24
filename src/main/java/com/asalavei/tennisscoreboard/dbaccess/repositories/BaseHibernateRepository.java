@@ -11,7 +11,7 @@ import org.hibernate.Transaction;
 import java.util.logging.Level;
 
 @Log
-public abstract class HibernateBaseRepository<T> implements CrudRepository<T> {
+public abstract class BaseHibernateRepository<T> implements CrudRepository<T> {
 
     protected static final SessionFactory sessionFactory = HibernateConfig.getSessionFactory();
 

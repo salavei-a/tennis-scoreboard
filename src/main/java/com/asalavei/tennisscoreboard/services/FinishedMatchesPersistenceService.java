@@ -1,7 +1,7 @@
 package com.asalavei.tennisscoreboard.services;
 
 import com.asalavei.tennisscoreboard.dbaccess.mapper.MatchEntityMapper;
-import com.asalavei.tennisscoreboard.dbaccess.repositories.HibernateMatchRepository;
+import com.asalavei.tennisscoreboard.dbaccess.repositories.MatchHibernateRepository;
 import com.asalavei.tennisscoreboard.dbaccess.repositories.MatchRepository;
 import com.asalavei.tennisscoreboard.dto.Match;
 import org.mapstruct.factory.Mappers;
@@ -10,7 +10,7 @@ import java.util.List;
 
 public class FinishedMatchesPersistenceService {
 
-    private final MatchRepository matchRepository = new HibernateMatchRepository();
+    private final MatchRepository matchRepository = new MatchHibernateRepository();
 
     private final MatchEntityMapper mapper = Mappers.getMapper(MatchEntityMapper.class);
 

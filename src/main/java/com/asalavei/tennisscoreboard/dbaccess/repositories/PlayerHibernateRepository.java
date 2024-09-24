@@ -8,7 +8,7 @@ import org.hibernate.Transaction;
 
 import java.util.Optional;
 
-public class HibernatePlayerRepository extends HibernateBaseRepository<PlayerEntity> implements PlayerRepository {
+public class PlayerHibernateRepository extends BaseHibernateRepository<PlayerEntity> implements PlayerRepository {
 
     @Override
     public Optional<PlayerEntity> findByName(String name) {

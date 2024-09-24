@@ -8,7 +8,7 @@ import org.hibernate.Transaction;
 
 import java.util.List;
 
-public class HibernateMatchRepository extends HibernateBaseRepository<MatchEntity> implements MatchRepository {
+public class MatchHibernateRepository extends BaseHibernateRepository<MatchEntity> implements MatchRepository {
 
     @Override
     public List<MatchEntity> findAll(int pageNumber, int pageSize) {
