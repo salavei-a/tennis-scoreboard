@@ -45,7 +45,7 @@ public class MatchScoreController extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         UUID uuid = DataValidator.getValidatedUuid(request.getParameter("uuid"));
         Integer pointWinnerId = DataValidator.getValidatedId(request.getParameter("player"));
 
@@ -56,10 +56,12 @@ public class MatchScoreController extends HttpServlet {
         Match calculatedMatch = matchScoreCalculationService.calculate(match, pointWinnerId);
 
         if (calculatedMatch.getWinner() != null) {
-            finishedMatchesPersistenceService.persist(calculatedMatch);
+            Match matchPersisted = finishedMatchesPersistenceService.persist(calculatedMatch);
             ongoingMatchesService.removeMatch(uuid);
 
-            response.sendRedirect("/matches");
+            request.setAttribute("match", mapper.toResponseDto(matchPersisted));
+            request.getRequestDispatcher("match-winner.jsp").forward(request, response);
+
             return;
         }
 
