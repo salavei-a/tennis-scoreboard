@@ -60,9 +60,13 @@ public class HibernateConfig {
         Properties properties = new Properties();
 
         try (InputStream inputStream = HibernateConfig.class.getClassLoader().getResourceAsStream("hibernate.properties")) {
+            if (inputStream == null) {
+                throw new AppRuntimeException("Configuration file 'hibernate.properties' not found in the classpath");
+            }
+
             properties.load(inputStream);
         } catch (IOException e) {
-            throw new AppRuntimeException(e);
+            throw new AppRuntimeException("Failed to load 'hibernate.properties'", e);
         }
 
         return properties;

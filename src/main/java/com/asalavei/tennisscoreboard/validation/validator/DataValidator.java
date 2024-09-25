@@ -69,7 +69,7 @@ public class DataValidator {
         try {
             return Integer.valueOf(id);
         } catch (NumberFormatException e) {
-            throw new ForbiddenException(String.format("Invalid ID: %s", id));
+            throw new ForbiddenException(String.format("Invalid ID=%s", id));
         }
     }
 
@@ -77,7 +77,7 @@ public class DataValidator {
         try {
             return UUID.fromString(uuid);
         } catch (IllegalArgumentException | NullPointerException e) {
-            throw new ForbiddenException(String.format("Invalid UUID: %s", uuid));
+            throw new ForbiddenException(String.format("Invalid UUID=%s", uuid));
         }
     }
 }

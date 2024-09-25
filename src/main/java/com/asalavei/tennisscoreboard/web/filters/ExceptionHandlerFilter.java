@@ -1,5 +1,6 @@
 package com.asalavei.tennisscoreboard.web.filters;
 
+import com.asalavei.tennisscoreboard.exceptions.DatabaseOperationException;
 import com.asalavei.tennisscoreboard.exceptions.ForbiddenException;
 import com.asalavei.tennisscoreboard.exceptions.NotFoundException;
 import com.asalavei.tennisscoreboard.exceptions.ValidationException;
@@ -12,9 +13,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.java.Log;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
-import static jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN;
-import static jakarta.servlet.http.HttpServletResponse.SC_NOT_FOUND;
+import static jakarta.servlet.http.HttpServletResponse.*;
 
 @Log
 @WebFilter("/*")
@@ -28,11 +29,14 @@ public class ExceptionHandlerFilter extends HttpFilter {
             request.setAttribute("errorMessage", e.getMessage());
             request.getRequestDispatcher(request.getRequestURI()).forward(request, response);
         } catch (NotFoundException e) {
-            log.info(e.getMessage());
+            log.info("Not found: " + e.getMessage());
             response.sendError(SC_NOT_FOUND);
         } catch (ForbiddenException e) {
-            log.info(e.getMessage());
+            log.info("Access denied: " + e.getMessage());
             response.sendError(SC_FORBIDDEN);
+        } catch (DatabaseOperationException e) {
+            log.log(Level.WARNING, "Database operation failed", e);
+            response.sendError(SC_INTERNAL_SERVER_ERROR);
         }
     }
 }

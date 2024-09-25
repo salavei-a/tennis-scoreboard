@@ -32,7 +32,7 @@ public class MatchScoreController extends HttpServlet {
         String uuidParameter = request.getParameter("uuid");
 
         if (StringUtils.isBlank(uuidParameter)) {
-            throw new NotFoundException("Not found");
+            throw new NotFoundException("UUID parameter is missing or empty");
         }
 
         UUID uuid = DataValidator.getValidatedUuid(uuidParameter);
