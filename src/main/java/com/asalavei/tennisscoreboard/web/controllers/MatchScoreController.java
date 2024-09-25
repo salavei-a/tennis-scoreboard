@@ -56,10 +56,10 @@ public class MatchScoreController extends HttpServlet {
         Match calculatedMatch = matchScoreCalculationService.calculate(match, pointWinnerId);
 
         if (calculatedMatch.getWinner() != null) {
-            Match matchPersisted = finishedMatchesPersistenceService.persist(calculatedMatch);
             ongoingMatchesService.removeMatch(uuid);
+            finishedMatchesPersistenceService.persist(calculatedMatch);
 
-            request.setAttribute("match", mapper.toResponseDto(matchPersisted));
+            request.setAttribute("match", mapper.toResponseDto(calculatedMatch));
             request.getRequestDispatcher("match-winner.jsp").forward(request, response);
 
             return;
