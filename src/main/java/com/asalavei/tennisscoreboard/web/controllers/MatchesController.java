@@ -1,7 +1,6 @@
 package com.asalavei.tennisscoreboard.web.controllers;
 
 import com.asalavei.tennisscoreboard.validation.DataValidator;
-import com.asalavei.tennisscoreboard.validation.scenario.FindByName;
 import com.asalavei.tennisscoreboard.web.dto.PlayerRequestDto;
 import com.asalavei.tennisscoreboard.services.FinishedMatchesPersistenceService;
 import com.asalavei.tennisscoreboard.web.mapper.MatchDtoMapper;
@@ -21,6 +20,7 @@ public class MatchesController extends HttpServlet {
     private static final int DEFAULT_SIZE = 10;
 
     private final FinishedMatchesPersistenceService service = new FinishedMatchesPersistenceService();
+
     private final MatchDtoMapper mapper = Mappers.getMapper(MatchDtoMapper.class);
 
     @Override
@@ -39,7 +39,7 @@ public class MatchesController extends HttpServlet {
                     .name(playerName)
                     .build();
 
-            DataValidator.validate(player, FindByName.class);
+            DataValidator.validate(player);
 
             setMatchesAttributesByPlayer(request, playerName, page);
         } else {

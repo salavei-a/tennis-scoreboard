@@ -19,11 +19,11 @@ public class MatchScoreCalculationService {
             3, 40
     );
 
-    public Match calculate(Match match, Player playerWinner) {
+    public Match calculate(Match match, Integer pointWinnerId) {
         Player firstPlayer = match.getFirstPlayer();
         Player secondPlayer = match.getSecondPlayer();
 
-        Player pointWinner = determinePointWinner(match, playerWinner.getId());
+        Player pointWinner = determinePointWinner(match, pointWinnerId);
 
         wonPoint(pointWinner);
 
@@ -79,7 +79,7 @@ public class MatchScoreCalculationService {
             return match.getSecondPlayer();
         }
 
-        throw new IllegalArgumentException("Invalid player ID: " + pointWinnerId); // TODO: handle custom exception
+        throw new IllegalArgumentException("Invalid player ID: " + pointWinnerId);
     }
 
     private boolean isGameFinished(Match match) {

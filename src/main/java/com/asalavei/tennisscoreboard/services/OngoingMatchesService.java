@@ -5,9 +5,9 @@ import com.asalavei.tennisscoreboard.dbaccess.repositories.PlayerHibernateReposi
 import com.asalavei.tennisscoreboard.dbaccess.repositories.PlayerRepository;
 import com.asalavei.tennisscoreboard.dto.Match;
 import com.asalavei.tennisscoreboard.dto.Player;
+import com.asalavei.tennisscoreboard.exceptions.NotFoundException;
 import org.mapstruct.factory.Mappers;
 
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -19,9 +19,9 @@ public class OngoingMatchesService {
 
     private final PlayerEntityMapper mapper = Mappers.getMapper(PlayerEntityMapper.class);
 
-    public UUID create(Player firstPlayer, Player secondPlayer) {
-        Player firstPlayerPersisted = getOrCreatePlayer(firstPlayer);
-        Player secondPlayerPersisted = getOrCreatePlayer(secondPlayer);
+    public UUID create(Match match) {
+        Player firstPlayerPersisted = getOrCreatePlayer(match.getFirstPlayer());
+        Player secondPlayerPersisted = getOrCreatePlayer(match.getSecondPlayer());
 
         firstPlayerPersisted.setGamePoints("0");
         secondPlayerPersisted.setGamePoints("0");
@@ -44,8 +44,14 @@ public class OngoingMatchesService {
                 );
     }
 
-    public Optional<Match> getOngoingMatch(UUID uuid) {
-        return Optional.ofNullable(ongoingMatches.get(uuid));
+    public Match getOngoingMatch(UUID uuid) {
+        Match match = ongoingMatches.get(uuid);
+
+        if (match == null) {
+            throw new NotFoundException(String.format("No current match found with UUID=%s", uuid));
+        }
+
+        return match;
     }
 
     public void removeMatch(UUID uuid) {

@@ -28,8 +28,10 @@ public class ExceptionHandlerFilter extends HttpFilter {
             request.setAttribute("errorMessage", e.getMessage());
             request.getRequestDispatcher(request.getRequestURI()).forward(request, response);
         } catch (NotFoundException e) {
+            log.info(e.getMessage());
             response.sendError(SC_NOT_FOUND);
         } catch (ForbiddenException e) {
+            log.info(e.getMessage());
             response.sendError(SC_FORBIDDEN);
         }
     }
