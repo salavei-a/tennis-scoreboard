@@ -99,7 +99,7 @@
 <div class="container">
     <h1>Welcome to the Tennis Scoreboard</h1>
     <a href="<%= request.getContextPath() %>/new-match" class="btn">New Match</a>
-    <a href="<%= request.getContextPath() %>/matches" class="btn">View Finished Matches</a>
+    <a href="<%= request.getContextPath() %>/matches" class="btn">Finished Matches</a>
 </div>
 
 </body>
