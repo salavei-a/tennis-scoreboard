@@ -107,7 +107,7 @@
             border-radius: 4px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.2);
             z-index: 1000;
-            min-width: 250px;
+            min-width: 150px;
             opacity: 0;
             transition: opacity 0.5s ease-in-out;
         }
