@@ -10,53 +10,23 @@ import org.hibernate.cfg.Configuration;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 import java.util.Properties;
 
 public class HibernateConfig {
 
+    private static final Properties properties = configureProperties();
     private static final SessionFactory sessionFactory = buildSessionFactory();
+    private static final HikariDataSource hikariDataSource = buildDataSource();
 
-    private static final HikariDataSource hikariDataSource = configureDataSource();
+    private static final String DB_URL = "jdbc:postgresql://localhost:4680/tennis_scoreboard";
+    private static final String DB_USER = "admin";
+    private static final String DB_PASSWORD = "admin";
 
     private HibernateConfig() {
     }
 
-    private static SessionFactory buildSessionFactory() {
-        Configuration configuration = new Configuration();
-
-        configuration.addAnnotatedClass(PlayerEntity.class);
-        configuration.addAnnotatedClass(MatchEntity.class);
-
-        return configuration.buildSessionFactory();
-    }
-
-    private static HikariDataSource configureDataSource() {
-        Properties properties = getProperties();
-
-        HikariConfig config = new HikariConfig();
-
-        config.setDriverClassName(properties.getProperty("hibernate.connection.driver_class"));
-        config.setJdbcUrl(properties.getProperty("hibernate.connection.url"));
-        config.setUsername(properties.getProperty("hibernate.connection.username"));
-        config.setPassword(properties.getProperty("hibernate.connection.password"));
-
-        config.setConnectionTimeout(Long.parseLong(properties.getProperty("hibernate.hikari.connectionTimeout")));
-        config.setMinimumIdle(Integer.parseInt(properties.getProperty("hibernate.hikari.minimumIdle")));
-        config.setMaximumPoolSize(Integer.parseInt(properties.getProperty("hibernate.hikari.maximumPoolSize")));
-        config.setIdleTimeout(Long.parseLong(properties.getProperty("hibernate.hikari.idleTimeout")));
-
-        return new HikariDataSource(config);
-    }
-
-    public static SessionFactory getSessionFactory() {
-        return sessionFactory;
-    }
-
-    public static HikariDataSource getHikariDataSource() {
-        return hikariDataSource;
-    }
-
-    private static Properties getProperties() {
+    private static Properties configureProperties() {
         Properties properties = new Properties();
 
         try (InputStream inputStream = HibernateConfig.class.getClassLoader().getResourceAsStream("hibernate.properties")) {
@@ -69,7 +39,49 @@ public class HibernateConfig {
             throw new AppRuntimeException("Failed to load 'hibernate.properties'", e);
         }
 
+        properties.setProperty("hibernate.connection.url", getEnvOrDefault("POSTGRES_URL", DB_URL));
+        properties.setProperty("hibernate.connection.username", getEnvOrDefault("POSTGRES_USER", DB_USER));
+        properties.setProperty("hibernate.connection.password", getEnvOrDefault("POSTGRES_PASSWORD", DB_PASSWORD));
+
         return properties;
+    }
+
+    private static String getEnvOrDefault(String envKey, String defaultValue) {
+        return Optional.ofNullable(System.getenv(envKey)).orElse(defaultValue);
+    }
+
+    private static SessionFactory buildSessionFactory() {
+        Configuration configuration = new Configuration();
+        configuration.setProperties(properties);
+
+        configuration.addAnnotatedClass(PlayerEntity.class);
+        configuration.addAnnotatedClass(MatchEntity.class);
+
+        return configuration.buildSessionFactory();
+    }
+
+    private static HikariDataSource buildDataSource() {
+        HikariConfig hikariConfig = new HikariConfig();
+
+        hikariConfig.setDriverClassName(properties.getProperty("hibernate.connection.driver_class"));
+        hikariConfig.setJdbcUrl(properties.getProperty("hibernate.connection.url"));
+        hikariConfig.setUsername(properties.getProperty("hibernate.connection.username"));
+        hikariConfig.setPassword(properties.getProperty("hibernate.connection.password"));
+
+        hikariConfig.setConnectionTimeout(Long.parseLong(properties.getProperty("hibernate.hikari.connectionTimeout")));
+        hikariConfig.setMinimumIdle(Integer.parseInt(properties.getProperty("hibernate.hikari.minimumIdle")));
+        hikariConfig.setMaximumPoolSize(Integer.parseInt(properties.getProperty("hibernate.hikari.maximumPoolSize")));
+        hikariConfig.setIdleTimeout(Long.parseLong(properties.getProperty("hibernate.hikari.idleTimeout")));
+
+        return new HikariDataSource(hikariConfig);
+    }
+
+    public static SessionFactory getSessionFactory() {
+        return sessionFactory;
+    }
+
+    public static HikariDataSource getHikariDataSource() {
+        return hikariDataSource;
     }
 
     public static void shutdown() {
