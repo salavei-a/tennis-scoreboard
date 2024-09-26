@@ -121,6 +121,21 @@
             background-color: #45a049;
             color: white;
         }
+        @media (max-width: 600px) {
+            .navbar a {
+                float: none;
+                width: 100%;
+                text-align: left;
+                padding: 14px;
+            }
+            .container {
+                margin: 20px;
+                padding: 20px;
+            }
+            button {
+                width: 100%;
+            }
+        }
 
         .error-notification {
             position: fixed;
