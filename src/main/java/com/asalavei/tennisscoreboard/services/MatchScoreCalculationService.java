@@ -4,6 +4,7 @@ import com.asalavei.tennisscoreboard.dto.Match;
 import com.asalavei.tennisscoreboard.dto.Player;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class MatchScoreCalculationService {
 
@@ -19,11 +20,11 @@ public class MatchScoreCalculationService {
             3, 40
     );
 
-    public Match calculate(Match match, Integer pointWinnerId) {
+    public Match calculate(Match match, UUID pointWinnerUuid) {
         Player firstPlayer = match.getFirstPlayer();
         Player secondPlayer = match.getSecondPlayer();
 
-        Player pointWinner = determinePointWinner(match, pointWinnerId);
+        Player pointWinner = determinePointWinner(match, pointWinnerUuid);
 
         wonPoint(pointWinner);
 
@@ -70,16 +71,16 @@ public class MatchScoreCalculationService {
         player.setSets(player.getSets() + 1);
     }
 
-    private Player determinePointWinner(Match match, Integer pointWinnerId) {
-        if (pointWinnerId.equals(match.getFirstPlayer().getId())) {
+    private Player determinePointWinner(Match match, UUID pointWinnerUuid) {
+        if (pointWinnerUuid.equals(match.getFirstPlayer().getUuid())) {
             return match.getFirstPlayer();
         }
 
-        if (pointWinnerId.equals(match.getSecondPlayer().getId())) {
+        if (pointWinnerUuid.equals(match.getSecondPlayer().getUuid())) {
             return match.getSecondPlayer();
         }
 
-        throw new IllegalArgumentException("Invalid player ID: " + pointWinnerId);
+        throw new IllegalArgumentException("Invalid player UUID: " + pointWinnerUuid);
     }
 
     private boolean isGameFinished(Match match) {

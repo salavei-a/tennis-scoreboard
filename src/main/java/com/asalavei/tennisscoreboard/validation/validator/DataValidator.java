@@ -22,17 +22,17 @@ public class DataValidator {
     private DataValidator() {
     }
 
-    public static void validatePointWinner(Integer pointWinnerId, Match match) {
-        if (isPlayerNotInMatch(pointWinnerId, match)) {
-            throw new ForbiddenException(String.format("Player with id=%s is not participating in match=%s", pointWinnerId, match));
+    public static void validatePointWinner(UUID pointWinnerUuid, Match match) {
+        if (isPlayerNotInMatch(pointWinnerUuid, match)) {
+            throw new ForbiddenException(String.format("Player with UUID=%s is not participating in match=%s", pointWinnerUuid, match));
         }
     }
 
-    private static boolean isPlayerNotInMatch(Integer pointWinner, Match match) {
+    private static boolean isPlayerNotInMatch(UUID pointWinnerUuid, Match match) {
         return !Arrays.asList(
-                match.getFirstPlayer().getId(),
-                match.getSecondPlayer().getId()
-        ).contains(pointWinner);
+                match.getFirstPlayer().getUuid(),
+                match.getSecondPlayer().getUuid()
+        ).contains(pointWinnerUuid);
     }
 
     public static void validateMatch(MatchRequestDto match) {
@@ -63,14 +63,6 @@ public class DataValidator {
         return violations.stream()
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining(", "));
-    }
-
-    public static Integer getValidatedId(String id) {
-        try {
-            return Integer.valueOf(id);
-        } catch (NumberFormatException e) {
-            throw new ForbiddenException(String.format("Invalid ID=%s", id));
-        }
     }
 
     public static UUID getValidatedUuid(String uuid) {

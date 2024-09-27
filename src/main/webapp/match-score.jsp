@@ -147,8 +147,8 @@
     </table>
 
     <div class="btn-form">
-        <form action="<%= request.getContextPath() %>/match-score?uuid=<%= request.getParameter("uuid") %>" method="post">
-            <input type="hidden" name="player" value="<%= match.getFirstPlayer().getId() %>">
+        <form action="<%= request.getContextPath() %>/match-score?uuid=<%= match.getUuid() %>" method="post">
+            <input type="hidden" name="player" value="<%= match.getFirstPlayer().getUuid() %>">
             <button type="submit" class="btn" onclick="this.disabled = true; this.form.submit();">
                 <%= match.getFirstPlayer().getName() %> Won the Point
             </button>
@@ -157,8 +157,8 @@
 
 
     <div class="btn-form">
-        <form action="<%= request.getContextPath() %>/match-score?uuid=<%= request.getParameter("uuid") %>" method="post">
-            <input type="hidden" name="player" value="<%= match.getSecondPlayer().getId() %>">
+        <form action="<%= request.getContextPath() %>/match-score?uuid=<%= match.getUuid() %>" method="post">
+            <input type="hidden" name="player" value="<%= match.getSecondPlayer().getUuid() %>">
             <button type="submit" class="btn" onclick="this.disabled = true; this.form.submit();">
                 <%= match.getSecondPlayer().getName() %> Won the Point</button>
         </form>
