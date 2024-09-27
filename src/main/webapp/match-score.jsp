@@ -144,13 +144,13 @@
             <td><%= firstPlayer.getName() %></td>
             <td><%= firstPlayerScore.getSets() %></td>
             <td><%= firstPlayerScore.getGames() %></td>
-            <td><%= firstPlayerScore.getGamePoints() %></td>
+            <td><%= firstPlayerScore.getPoints() %></td>
         </tr>
         <tr>
             <td><%= secondPlayer.getName() %></td>
             <td><%= secondPlayerScore.getSets() %></td>
             <td><%= secondPlayerScore.getGames() %></td>
-            <td><%= secondPlayerScore.getGamePoints() %></td>
+            <td><%= secondPlayerScore.getPoints() %></td>
         </tr>
     </table>
 

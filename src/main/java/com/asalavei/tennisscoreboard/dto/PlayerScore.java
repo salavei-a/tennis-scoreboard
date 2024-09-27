@@ -3,6 +3,10 @@ package com.asalavei.tennisscoreboard.dto;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * DTO representing the score of a player, including internal (business logic) points
+ * for calculation and display points according to tennis rules.
+ */
 @Data
 @Builder
 public class PlayerScore {
@@ -11,7 +15,7 @@ public class PlayerScore {
 
     private int games;
 
-    private int points;
+    private int internalPoints;
 
-    private String gamePoints;
+    private String displayPoints;
 }

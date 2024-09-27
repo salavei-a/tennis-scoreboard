@@ -11,5 +11,5 @@ public class PlayerScoreResponseDto {
 
     int games;
 
-    String gamePoints;
+    String points;
 }

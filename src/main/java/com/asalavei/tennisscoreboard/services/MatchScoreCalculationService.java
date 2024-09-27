@@ -1,25 +1,18 @@
 package com.asalavei.tennisscoreboard.services;
 
+import com.asalavei.tennisscoreboard.enums.GamePoint;
 import com.asalavei.tennisscoreboard.dto.Match;
 import com.asalavei.tennisscoreboard.dto.Player;
 import com.asalavei.tennisscoreboard.dto.PlayerScore;
 
-import java.util.Map;
 import java.util.UUID;
 
 public class MatchScoreCalculationService {
 
     private static final int MIN_POINTS_TO_WIN_A_GAME = 4;
-    private static final int MIN_POINTS_TO_WIN_A_SET = 6;
+    private static final int MIN_GAMES_TO_WIN_A_SET = 6;
+    private static final int MIN_SETS_TO_WIN_A_MATCH = 2;
     private static final int MIN_POINTS_TO_WIN_TIE_BREAK = 7;
-    private static final String GAME_ADVANTAGE = "AD";
-    private static final String SCORE_40_POINTS = "40";
-
-    private static final Map<Integer, Integer> TENNIS_POINTS_MAPPING = Map.of(
-            1, 15,
-            2, 30,
-            3, 40
-    );
 
     public Match calculate(Match match, UUID pointWinnerUuid) {
         Player firstPlayer = match.getFirstPlayer();
@@ -65,7 +58,7 @@ public class MatchScoreCalculationService {
     }
 
     private void wonPoint(PlayerScore playerScore) {
-        playerScore.setPoints(playerScore.getPoints() + 1);
+        playerScore.setInternalPoints(playerScore.getInternalPoints() + 1);
     }
 
     private void wonGame(PlayerScore playerScore) {
@@ -89,8 +82,8 @@ public class MatchScoreCalculationService {
     }
 
     private boolean isGameFinished(PlayerScore firstPlayerScore, PlayerScore secondPlayerScore) {
-        int firstPlayerPoints = firstPlayerScore.getPoints();
-        int secondPlayerPoints = secondPlayerScore.getPoints();
+        int firstPlayerPoints = firstPlayerScore.getInternalPoints();
+        int secondPlayerPoints = secondPlayerScore.getInternalPoints();
 
         if (isTieBreak(firstPlayerScore, secondPlayerScore)) {
             return Math.max(firstPlayerPoints, secondPlayerPoints) >= MIN_POINTS_TO_WIN_TIE_BREAK &&
@@ -105,14 +98,14 @@ public class MatchScoreCalculationService {
         int firstPlayerGames = firstPlayerScore.getGames();
         int secondPlayerGames = secondPlayerScore.getGames();
 
-        if (Math.max(firstPlayerGames, secondPlayerGames) >= MIN_POINTS_TO_WIN_A_SET &&
+        if (Math.max(firstPlayerGames, secondPlayerGames) >= MIN_GAMES_TO_WIN_A_SET &&
                 Math.abs(firstPlayerGames - secondPlayerGames) > 1) {
             // The score is 6-x or x-6 where x <= 4, or 7-5 or 5-7
             return true;
         }
 
-        if (Math.max(firstPlayerGames, secondPlayerGames) > MIN_POINTS_TO_WIN_A_SET &&
-                Math.min(firstPlayerGames, secondPlayerGames) == MIN_POINTS_TO_WIN_A_SET) {
+        if (Math.max(firstPlayerGames, secondPlayerGames) > MIN_GAMES_TO_WIN_A_SET &&
+                Math.min(firstPlayerGames, secondPlayerGames) == MIN_GAMES_TO_WIN_A_SET) {
             // The score is 6-7 or 7-6
             return true;
         }
@@ -125,12 +118,12 @@ public class MatchScoreCalculationService {
     }
 
     private boolean isMatchFinished(PlayerScore firstPlayerScore, PlayerScore secondPlayerScore) {
-        return firstPlayerScore.getSets() == 2 || secondPlayerScore.getSets() == 2;
+        return firstPlayerScore.getSets() == MIN_SETS_TO_WIN_A_MATCH || secondPlayerScore.getSets() == MIN_SETS_TO_WIN_A_MATCH;
     }
 
     private void resetPoints(PlayerScore firstPlayerScore, PlayerScore secondPlayerScore) {
-        firstPlayerScore.setPoints(0);
-        secondPlayerScore.setPoints(0);
+        firstPlayerScore.setInternalPoints(GamePoint.LOVE.getInternal());
+        secondPlayerScore.setInternalPoints(GamePoint.LOVE.getInternal());
     }
 
     private void resetGames(PlayerScore firstPlayerScore, PlayerScore secondPlayerScore) {
@@ -139,8 +132,8 @@ public class MatchScoreCalculationService {
     }
 
     private void assignGamePoints(PlayerScore firstPlayerScore, PlayerScore secondPlayerScore) {
-        int firstPlayerPoints = firstPlayerScore.getPoints();
-        int secondPlayerPoints = secondPlayerScore.getPoints();
+        int firstPlayerPoints = firstPlayerScore.getInternalPoints();
+        int secondPlayerPoints = secondPlayerScore.getInternalPoints();
 
         if (isTieBreak(firstPlayerScore, secondPlayerScore)) {
             assignGamePointsForTieBreak(firstPlayerScore, secondPlayerScore);
@@ -168,8 +161,8 @@ public class MatchScoreCalculationService {
     }
 
     private void assignGamePointsForTieBreak(PlayerScore firstPlayerScore, PlayerScore secondPlayerScore) {
-        firstPlayerScore.setGamePoints(String.valueOf(firstPlayerScore.getPoints()));
-        secondPlayerScore.setGamePoints(String.valueOf(secondPlayerScore.getPoints()));
+        firstPlayerScore.setDisplayPoints(String.valueOf(firstPlayerScore.getInternalPoints()));
+        secondPlayerScore.setDisplayPoints(String.valueOf(secondPlayerScore.getInternalPoints()));
     }
 
     private boolean isWithinRegularGamePoints(int firstPlayerPoints, int secondPlayerPoints) {
@@ -177,12 +170,8 @@ public class MatchScoreCalculationService {
     }
 
     private void assignRegularGamePoints(PlayerScore firstPlayerScore, PlayerScore secondPlayerScore) {
-        firstPlayerScore.setGamePoints(String.valueOf(getFormattedGamePoints(firstPlayerScore.getPoints())));
-        secondPlayerScore.setGamePoints(String.valueOf(getFormattedGamePoints(secondPlayerScore.getPoints())));
-    }
-
-    private int getFormattedGamePoints(int gamePoints) {
-        return TENNIS_POINTS_MAPPING.getOrDefault(gamePoints, gamePoints);
+        firstPlayerScore.setDisplayPoints(GamePoint.fromInternal(firstPlayerScore.getInternalPoints()));
+        secondPlayerScore.setDisplayPoints(GamePoint.fromInternal(secondPlayerScore.getInternalPoints()));
     }
 
     private boolean hasPlayerAdvantage(int playerPoints, int opponentPoints) {
@@ -190,8 +179,8 @@ public class MatchScoreCalculationService {
     }
 
     private void assignGameAdvantage(PlayerScore playerWithAdvantage, PlayerScore otherPlayer) {
-        playerWithAdvantage.setGamePoints(GAME_ADVANTAGE);
-        otherPlayer.setGamePoints(SCORE_40_POINTS);
+        playerWithAdvantage.setDisplayPoints(GamePoint.ADVANTAGE.getDisplay());
+        otherPlayer.setDisplayPoints(GamePoint.FORTY.getDisplay());
     }
 
     private boolean isDeuce(int firstPlayerPoints, int secondPlayerPoints) {
@@ -199,7 +188,7 @@ public class MatchScoreCalculationService {
     }
 
     private void assignDeuceGamePoints(PlayerScore firstPlayerScore, PlayerScore secondPlayerScore) {
-        firstPlayerScore.setGamePoints(SCORE_40_POINTS);
-        secondPlayerScore.setGamePoints(SCORE_40_POINTS);
+        firstPlayerScore.setDisplayPoints(GamePoint.FORTY.getDisplay());
+        secondPlayerScore.setDisplayPoints(GamePoint.FORTY.getDisplay());
     }
 }
