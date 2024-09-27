@@ -3,6 +3,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%
     MatchResponseDto match = (MatchResponseDto) request.getAttribute("match");
+
     PlayerResponseDto firstPlayer = match.getFirstPlayer();
     PlayerResponseDto secondPlayer = match.getSecondPlayer();
 %>
@@ -11,7 +12,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Match Result - <%= match.getFirstPlayer().getName() %> vs <%= match.getSecondPlayer().getName() %></title>
+    <title>Match Result - <%= firstPlayer.getName() %> vs <%= secondPlayer.getName() %></title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -153,11 +154,11 @@
     <div class="score-board">
         <div class="player">
             <div class="player-name"><%= firstPlayer.getName() %></div>
-            <div class="player-score"><%= firstPlayer.getSets() %></div>
+            <div class="player-score"><%= firstPlayer.getPlayerScore().getSets() %></div>
         </div>
         <div class="player">
             <div class="player-name"><%= secondPlayer.getName() %></div>
-            <div class="player-score"><%= secondPlayer.getSets() %></div>
+            <div class="player-score"><%= secondPlayer.getPlayerScore().getSets() %></div>
         </div>
     </div>
 

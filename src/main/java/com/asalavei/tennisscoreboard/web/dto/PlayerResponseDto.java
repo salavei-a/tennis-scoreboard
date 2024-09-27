@@ -13,9 +13,5 @@ public class PlayerResponseDto {
 
     String name;
 
-    int sets;
-
-    int games;
-
-    String gamePoints;
+    PlayerScoreResponseDto playerScore;
 }

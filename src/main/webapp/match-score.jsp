@@ -1,14 +1,22 @@
 <%@ page import="com.asalavei.tennisscoreboard.web.dto.MatchResponseDto" %>
+<%@ page import="com.asalavei.tennisscoreboard.web.dto.PlayerResponseDto" %>
+<%@ page import="com.asalavei.tennisscoreboard.web.dto.PlayerScoreResponseDto" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%
     MatchResponseDto match = (MatchResponseDto) request.getAttribute("match");
+
+    PlayerResponseDto firstPlayer = match.getFirstPlayer();
+    PlayerResponseDto secondPlayer = match.getSecondPlayer();
+
+    PlayerScoreResponseDto firstPlayerScore = firstPlayer.getPlayerScore();
+    PlayerScoreResponseDto secondPlayerScore = secondPlayer.getPlayerScore();
 %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Match Score - <%= match.getFirstPlayer().getName() %> vs <%= match.getSecondPlayer().getName() %></title>
+    <title>Match Score - <%= firstPlayer.getName() %> vs <%= secondPlayer.getName() %></title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -133,16 +141,16 @@
             <th>Points</th>
         </tr>
         <tr>
-            <td><%= match.getFirstPlayer().getName() %></td>
-            <td><%= match.getFirstPlayer().getSets() %></td>
-            <td><%= match.getFirstPlayer().getGames() %></td>
-            <td><%= match.getFirstPlayer().getGamePoints() %></td>
+            <td><%= firstPlayer.getName() %></td>
+            <td><%= firstPlayerScore.getSets() %></td>
+            <td><%= firstPlayerScore.getGames() %></td>
+            <td><%= firstPlayerScore.getGamePoints() %></td>
         </tr>
         <tr>
-            <td><%= match.getSecondPlayer().getName() %></td>
-            <td><%= match.getSecondPlayer().getSets() %></td>
-            <td><%= match.getSecondPlayer().getGames() %></td>
-            <td><%= match.getSecondPlayer().getGamePoints() %></td>
+            <td><%= secondPlayer.getName() %></td>
+            <td><%= secondPlayerScore.getSets() %></td>
+            <td><%= secondPlayerScore.getGames() %></td>
+            <td><%= secondPlayerScore.getGamePoints() %></td>
         </tr>
     </table>
 

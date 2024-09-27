@@ -5,6 +5,7 @@ import com.asalavei.tennisscoreboard.dbaccess.mapper.PlayerEntityMapper;
 import com.asalavei.tennisscoreboard.dbaccess.repositories.PlayerHibernateRepository;
 import com.asalavei.tennisscoreboard.dbaccess.repositories.PlayerRepository;
 import com.asalavei.tennisscoreboard.dto.Player;
+import com.asalavei.tennisscoreboard.dto.PlayerScore;
 import org.mapstruct.factory.Mappers;
 
 import java.util.UUID;
@@ -26,7 +27,11 @@ public class PlayerService {
                 .uuid(UUID.randomUUID())
                 .id(entity.getId())
                 .name(entity.getName())
-                .gamePoints("0")
+                .playerScore(
+                        PlayerScore.builder()
+                                .gamePoints("0")
+                                .build()
+                )
                 .build();
     }
 }

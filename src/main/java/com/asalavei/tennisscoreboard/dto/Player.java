@@ -1,26 +1,20 @@
 package com.asalavei.tennisscoreboard.dto;
 
-import lombok.Data;
 import lombok.Builder;
+import lombok.Value;
 
 import java.util.UUID;
 
 
-@Data
+@Value
 @Builder
 public class Player {
 
-    private final UUID uuid;
+    UUID uuid;
 
-    private final Integer id;
+    Integer id;
 
-    private final String name;
+    String name;
 
-    private String gamePoints;
-
-    private int sets;
-
-    private int games;
-
-    private int points;
+    PlayerScore playerScore;
 }
