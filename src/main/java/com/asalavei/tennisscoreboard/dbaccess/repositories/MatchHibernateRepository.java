@@ -22,10 +22,10 @@ public class MatchHibernateRepository extends BaseHibernateRepository<MatchEntit
     public List<MatchEntity> findAllByPlayerName(String name, int pageNumber, int pageSize) {
         return executeInTransaction(session -> {
             String query = "from MatchEntity m join fetch m.firstPlayer fp join fetch m.secondPlayer sp " +
-                           "where fp.name = :name or sp.name = :name order by m.id desc";
+                           "where lower(fp.name) like :name or lower(sp.name) like :name order by m.id desc";
 
             return session.createQuery(query)
-                    .setParameter("name", name)
+                    .setParameter("name", "%" + name.toLowerCase() + "%")
                     .setFirstResult((pageNumber - 1) * pageSize)
                     .setMaxResults(pageSize)
                     .list();
@@ -48,10 +48,10 @@ public class MatchHibernateRepository extends BaseHibernateRepository<MatchEntit
         return executeInTransaction(session -> {
             String query = "select count (m.id) from MatchEntity m " +
                            "join m.firstPlayer fp join m.secondPlayer sp " +
-                           "where fp.name = :name or sp.name = :name";
+                           "where lower(fp.name) like :name or lower(sp.name) like :name";
 
             Long countResults = session.createQuery(query, Long.class)
-                    .setParameter("name", name)
+                    .setParameter("name", "%" + name.toLowerCase() + "%")
                     .uniqueResult();
 
             return (int) Math.ceil((double) countResults / pageSize);
