@@ -1,4 +1,4 @@
-package com.asalavei.tennisscoreboard.validation.validator;
+package com.asalavei.tennisscoreboard.validation.validators;
 
 import com.asalavei.tennisscoreboard.dto.Match;
 import com.asalavei.tennisscoreboard.exceptions.ForbiddenException;

@@ -1,6 +1,6 @@
-package com.asalavei.tennisscoreboard.validation.validator;
+package com.asalavei.tennisscoreboard.validation.validators;
 
-import com.asalavei.tennisscoreboard.validation.annotation.ValidName;
+import com.asalavei.tennisscoreboard.validation.constraints.ValidName;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.apache.commons.lang3.StringUtils;

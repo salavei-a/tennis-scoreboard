@@ -1,7 +1,7 @@
 package com.asalavei.tennisscoreboard.web.controllers;
 
 import com.asalavei.tennisscoreboard.exceptions.NotFoundException;
-import com.asalavei.tennisscoreboard.validation.validator.DataValidator;
+import com.asalavei.tennisscoreboard.validation.validators.DataValidator;
 import com.asalavei.tennisscoreboard.web.mapper.MatchDtoMapper;
 import com.asalavei.tennisscoreboard.dto.Match;
 import com.asalavei.tennisscoreboard.services.FinishedMatchesPersistenceService;

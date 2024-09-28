@@ -1,6 +1,6 @@
 package com.asalavei.tennisscoreboard.web.dto;
 
-import com.asalavei.tennisscoreboard.validation.annotation.ValidName;
+import com.asalavei.tennisscoreboard.validation.constraints.ValidName;
 import com.asalavei.tennisscoreboard.validation.groups.Create;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
