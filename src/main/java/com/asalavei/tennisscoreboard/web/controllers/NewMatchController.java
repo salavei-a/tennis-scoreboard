@@ -56,6 +56,6 @@ public class NewMatchController extends HttpServlet {
 
         UUID uuid = ongoingMatchesService.create(mapper.toDto(match));
 
-        response.sendRedirect("/match-score?uuid=" + uuid);
+        response.sendRedirect(request.getContextPath() + "/match-score?uuid=" + uuid);
     }
 }

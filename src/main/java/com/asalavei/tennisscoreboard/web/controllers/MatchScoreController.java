@@ -65,6 +65,6 @@ public class MatchScoreController extends HttpServlet {
             return;
         }
 
-        response.sendRedirect("/match-score?uuid=" + matchUuid);
+        response.sendRedirect(request.getContextPath() + "/match-score?uuid=" + matchUuid);
     }
 }
