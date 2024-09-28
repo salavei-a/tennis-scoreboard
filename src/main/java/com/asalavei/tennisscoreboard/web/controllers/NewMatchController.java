@@ -1,5 +1,6 @@
 package com.asalavei.tennisscoreboard.web.controllers;
 
+import com.asalavei.tennisscoreboard.validation.groups.Create;
 import com.asalavei.tennisscoreboard.validation.validator.DataValidator;
 import com.asalavei.tennisscoreboard.web.dto.MatchRequestDto;
 import com.asalavei.tennisscoreboard.web.dto.PlayerRequestDto;
@@ -44,8 +45,8 @@ public class NewMatchController extends HttpServlet {
                 .name(request.getParameter("secondPlayer"))
                 .build();
 
-        DataValidator.validate(firstPlayer);
-        DataValidator.validate(secondPlayer);
+        DataValidator.validate(firstPlayer, Create.class);
+        DataValidator.validate(secondPlayer, Create.class);
 
         MatchRequestDto match = MatchRequestDto.builder()
                 .firstPlayer(firstPlayer)

@@ -50,7 +50,13 @@ public class DataValidator {
     }
 
     public static <T> void validate(T dto) {
-        Set<ConstraintViolation<T>> violations = validator.validate(dto);
+        validate(dto, null);
+    }
+
+    public static <T> void validate(T dto, Class<?> group) {
+        Set<ConstraintViolation<T>> violations = (group == null) ?
+                validator.validate(dto) :
+                validator.validate(dto, group);
 
         if (!violations.isEmpty()) {
             String violationsMessage = getViolationsMessage(violations);
