@@ -81,6 +81,16 @@ public class MatchScoreCalculationService {
         throw new IllegalArgumentException("Invalid player UUID: " + pointWinnerUuid);
     }
 
+    /**
+     * Checks if the game has finished.
+     * A game is considered finished under the following conditions:
+     * - In a regular game, one player must score at least 4 points and
+     *   have at least a 2-point advantage over the opponent to win.
+     * - In a tiebreak game, one player must score at least 7 points and
+     *   have at least a 2-point advantage over the opponent to win.
+     *
+     * @return true if the game is finished, false otherwise
+     */
     private boolean isGameFinished(PlayerScore firstPlayerScore, PlayerScore secondPlayerScore) {
         int firstPlayerPoints = firstPlayerScore.getInternalPoints();
         int secondPlayerPoints = secondPlayerScore.getInternalPoints();
@@ -94,19 +104,28 @@ public class MatchScoreCalculationService {
                 Math.abs(firstPlayerPoints - secondPlayerPoints) > 1;
     }
 
+    /**
+     * Checks if the set has finished.
+     * A set is considered finished if one player has won at least 6 games
+     * and has at least a 2-game advantage over the opponent.
+     * Specific conditions include:
+     * - The score is 6-x or x-6, where x <= 4 (player wins by a large margin).
+     * - The score is 7-5 or 5-7 (close win).
+     * - The score is 7-6 or 6-7 (tiebreak scenario).
+     *
+     * @return true if the set is finished, false otherwise
+     */
     private boolean isSetFinished(PlayerScore firstPlayerScore, PlayerScore secondPlayerScore) {
         int firstPlayerGames = firstPlayerScore.getGames();
         int secondPlayerGames = secondPlayerScore.getGames();
 
         if (Math.max(firstPlayerGames, secondPlayerGames) >= MIN_GAMES_TO_WIN_A_SET &&
                 Math.abs(firstPlayerGames - secondPlayerGames) > 1) {
-            // The score is 6-x or x-6 where x <= 4, or 7-5 or 5-7
             return true;
         }
 
         if (Math.max(firstPlayerGames, secondPlayerGames) > MIN_GAMES_TO_WIN_A_SET &&
                 Math.min(firstPlayerGames, secondPlayerGames) == MIN_GAMES_TO_WIN_A_SET) {
-            // The score is 6-7 or 7-6
             return true;
         }
 
