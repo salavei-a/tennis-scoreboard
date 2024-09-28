@@ -17,7 +17,7 @@ public enum GamePoint {
 
     /**
      * Converts the internal game point (used in business logic for calculation) to its display
-     * representation according to tennis rules for regular play (not tie-break stage).
+     * representation according to tennis rules for regular play (not tiebreak stage).
      *
      * @param internal the business logic game point
      * @return the display representation of the game point

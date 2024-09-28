@@ -12,7 +12,7 @@ public class MatchScoreCalculationService {
     private static final int MIN_POINTS_TO_WIN_A_GAME = 4;
     private static final int MIN_GAMES_TO_WIN_A_SET = 6;
     private static final int MIN_SETS_TO_WIN_A_MATCH = 2;
-    private static final int MIN_POINTS_TO_WIN_TIE_BREAK = 7;
+    private static final int MIN_POINTS_TO_WIN_TIEBREAK = 7;
 
     public Match calculate(Match match, UUID pointWinnerUuid) {
         Player firstPlayer = match.getFirstPlayer();
@@ -85,8 +85,8 @@ public class MatchScoreCalculationService {
         int firstPlayerPoints = firstPlayerScore.getInternalPoints();
         int secondPlayerPoints = secondPlayerScore.getInternalPoints();
 
-        if (isTieBreak(firstPlayerScore, secondPlayerScore)) {
-            return Math.max(firstPlayerPoints, secondPlayerPoints) >= MIN_POINTS_TO_WIN_TIE_BREAK &&
+        if (isTiebreak(firstPlayerScore, secondPlayerScore)) {
+            return Math.max(firstPlayerPoints, secondPlayerPoints) >= MIN_POINTS_TO_WIN_TIEBREAK &&
                     Math.abs(firstPlayerPoints - secondPlayerPoints) > 1;
         }
 
@@ -113,7 +113,7 @@ public class MatchScoreCalculationService {
         return false;
     }
 
-    private boolean isTieBreak(PlayerScore firstPlayerScore, PlayerScore secondPlayerScore) {
+    private boolean isTiebreak(PlayerScore firstPlayerScore, PlayerScore secondPlayerScore) {
         return firstPlayerScore.getGames() == 6 && secondPlayerScore.getGames() == 6;
     }
 
@@ -135,8 +135,8 @@ public class MatchScoreCalculationService {
         int firstPlayerPoints = firstPlayerScore.getInternalPoints();
         int secondPlayerPoints = secondPlayerScore.getInternalPoints();
 
-        if (isTieBreak(firstPlayerScore, secondPlayerScore)) {
-            assignGamePointsForTieBreak(firstPlayerScore, secondPlayerScore);
+        if (isTiebreak(firstPlayerScore, secondPlayerScore)) {
+            assignGamePointsForTiebreak(firstPlayerScore, secondPlayerScore);
             return;
         }
 
@@ -160,7 +160,7 @@ public class MatchScoreCalculationService {
         }
     }
 
-    private void assignGamePointsForTieBreak(PlayerScore firstPlayerScore, PlayerScore secondPlayerScore) {
+    private void assignGamePointsForTiebreak(PlayerScore firstPlayerScore, PlayerScore secondPlayerScore) {
         firstPlayerScore.setDisplayPoints(String.valueOf(firstPlayerScore.getInternalPoints()));
         secondPlayerScore.setDisplayPoints(String.valueOf(secondPlayerScore.getInternalPoints()));
     }
