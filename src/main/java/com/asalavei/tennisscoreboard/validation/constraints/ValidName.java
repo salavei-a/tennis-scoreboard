@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidName {
 
-    String message() default "Name is incorrect. Use Latin characters";
+    String message() default "Name is incorrect. Use English letters";
 
     Class<?>[] groups() default {};
 
