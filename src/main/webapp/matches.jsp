@@ -83,7 +83,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
-            justify-content: center;
+            justify-content: flex-start;
         }
         .match-card {
             background-color: #fff;
