@@ -7,63 +7,17 @@ VALUES ('Novak Djokovic'),
        ('Andrey Rublev'),
        ('Taylor Fritz'),
        ('Hubert Hurkacz'),
-       ('Casper Ruud'),
-       ('Grigor Dimitrov'),
-       ('Alex De Minaur'),
-       ('Stefanos Tsitsipas'),
-       ('Tommy Paul'),
-       ('Holger Rune'),
-       ('Frances Tiafoe'),
-       ('Sebastian Korda'),
-       ('Ben Shelton'),
-       ('Ugo Humbert'),
-       ('Lorenzo Musetti'),
-       ('Jack Draper'),
-       ('Felix Auger-Aliassime'),
-       ('Alejandro Tabilo');
+       ('Casper Ruud');
 
-INSERT INTO matches (first_player_id, second_player_id, winner_id)
-VALUES (1, 2, 1),
-       (1, 3, 1),
-       (1, 4, 4),
-       (1, 10, 1),
-       (1, 11, 11),
-       (1, 12, 1),
-       (1, 13, 1),
-       (1, 14, 14),
-       (1, 15, 1),
-       (1, 16, 1),
-       (2, 1, 1),
-       (2, 3, 2),
-       (2, 4, 2),
-       (2, 5, 5),
-       (4, 5, 4),
-       (7, 8, 8),
-       (10, 11, 10),
-       (12, 13, 12),
-       (14, 1, 1),
-       (1, 5, 1),
-       (1, 6, 6),
-       (1, 7, 1),
-       (1, 8, 1),
-       (1, 9, 1),
-       (1, 2, 1),
-       (1, 3, 1),
-       (1, 4, 4),
-       (1, 10, 1),
-       (1, 11, 11),
-       (1, 12, 1),
-       (1, 13, 1),
-       (1, 14, 14),
-       (1, 15, 1),
-       (1, 16, 1),
-       (1, 17, 1),
-       (1, 18, 1),
-       (1, 19, 1),
-       (2, 1, 1),
-       (2, 3, 2),
-       (2, 4, 2),
-       (2, 5, 5),
-       (1, 20, 1),
-       (1, 21, 1),
-       (1, 22, 22);
+DO $$
+BEGIN
+    FOR first_player_id IN 1..9 LOOP
+        FOR second_player_id IN first_player_id + 1 .. 9 LOOP
+            INSERT INTO matches (first_player_id, second_player_id, winner_id)
+            VALUES (first_player_id, second_player_id, first_player_id);
+
+            INSERT INTO matches (first_player_id, second_player_id, winner_id)
+            VALUES (first_player_id, second_player_id, second_player_id);
+            END LOOP;
+        END LOOP;
+END $$;
