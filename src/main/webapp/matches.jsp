@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matches</title>
+    <title>Finished Matches</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -41,13 +41,13 @@
             margin-right: 8px;
         }
         .container {
-            text-align: center;
             margin: 20px auto;
-            max-width: 900px;
+            max-width: 1200px;
             padding: 0 20px;
         }
         h1 {
             color: #333;
+            text-align: center;
         }
         form {
             margin-bottom: 20px;
@@ -79,23 +79,48 @@
         button:hover {
             background-color: #45a049;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        .matches-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
         }
-        th, td {
-            padding: 12px 15px;
-            border: 1px solid #ddd;
+        .match-card {
+            background-color: #fff;
+            width: 300px;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             text-align: center;
         }
-        th {
-            background-color: #f2f2f2;
-            color: #333;
+        .player-name {
+            font-size: 18px;
+            text-align: left;
+            margin: 5px 0;
         }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
+        .winner {
+            font-weight: bold;
+        }
+        .winner::after {
+            content: ' ✅';
+        }
+        .error-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px 20px;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            z-index: 1000;
+            min-width: 150px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .error-notification.show {
+            opacity: 1;
         }
         .pagination {
             margin-top: 20px;
@@ -130,30 +155,21 @@
             }
             .container {
                 margin: 20px;
-                padding: 20px;
+                padding: 0 10px;
             }
             button {
                 width: 100%;
             }
-        }
-
-        .error-notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 15px 20px;
-            border: 1px solid #f5c6cb;
-            border-radius: 4px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-            z-index: 1000;
-            min-width: 150px;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-        }
-        .error-notification.show {
-            opacity: 1;
+            form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            input[type="text"] {
+                width: 100%;
+            }
+            .match-card {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -167,7 +183,7 @@
         <i class="new-match-icon">➕</i> New Match
     </a>
     <a href="<%= request.getContextPath() %>/matches" class="active">
-        <i class="new-match-icon">✅</i> Finished Matches
+        <i class="finished-matches-icon">✅</i> Finished Matches
     </a>
 </div>
 
@@ -182,35 +198,32 @@
         <button type="submit">Search</button>
     </form>
 
-    <table>
-        <thead>
-        <tr>
-            <th>Players</th>
-            <th>Winner</th>
-        </tr>
-        </thead>
-        <tbody>
+    <div class="matches-grid">
         <%
             List<MatchResponseDto> matches = (List<MatchResponseDto>) request.getAttribute("matches");
             if (matches != null && !matches.isEmpty()) {
                 for (MatchResponseDto match : matches) {
+                    String firstPlayerName = match.getFirstPlayer().getName();
+                    String secondPlayerName = match.getSecondPlayer().getName();
+                    String winnerName = match.getWinner().getName();
         %>
-        <tr>
-            <td><%= match.getFirstPlayer().getName() %> vs <%= match.getSecondPlayer().getName() %></td>
-            <td><%= match.getWinner().getName() %></td>
-        </tr>
-        <%
-            }
+        <div class="match-card">
+            <%
+                if (firstPlayerName.equals(winnerName)) {
+            %>
+            <div class="player-name winner"><%= firstPlayerName %></div>
+            <div class="player-name"><%= secondPlayerName %></div>
+            <% } else { %>
+            <div class="player-name"><%= firstPlayerName %></div>
+            <div class="player-name winner"><%= secondPlayerName %></div>
+            <% } %>
+        </div>
+        <%     }
         } else {
         %>
-        <tr>
-            <td colspan="2">No finished matches available</td>
-        </tr>
-        <%
-            }
-        %>
-        </tbody>
-    </table>
+        <p>No finished matches available</p>
+        <% } %>
+    </div>
 
     <div class="pagination">
         <%

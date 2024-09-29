@@ -17,7 +17,7 @@ import java.io.IOException;
 public class MatchesController extends HttpServlet {
 
     private static final int DEFAULT_PAGE = 1;
-    private static final int DEFAULT_SIZE = 10;
+    private static final int DEFAULT_SIZE = 12;
 
     private final FinishedMatchesPersistenceService service = new FinishedMatchesPersistenceService();
 
