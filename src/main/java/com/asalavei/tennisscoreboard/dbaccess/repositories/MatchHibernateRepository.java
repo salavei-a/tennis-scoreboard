@@ -25,7 +25,7 @@ public class MatchHibernateRepository extends BaseHibernateRepository<MatchEntit
                            "where lower(fp.name) like :name or lower(sp.name) like :name order by m.id desc";
 
             return session.createQuery(query)
-                    .setParameter("name", "%" + name.toLowerCase() + "%")
+                    .setParameter("name", "%" + name.trim().toLowerCase() + "%")
                     .setFirstResult((pageNumber - 1) * pageSize)
                     .setMaxResults(pageSize)
                     .list();
@@ -51,7 +51,7 @@ public class MatchHibernateRepository extends BaseHibernateRepository<MatchEntit
                            "where lower(fp.name) like :name or lower(sp.name) like :name";
 
             Long countResults = session.createQuery(query, Long.class)
-                    .setParameter("name", "%" + name.toLowerCase() + "%")
+                    .setParameter("name", "%" + name.trim().toLowerCase() + "%")
                     .uniqueResult();
 
             return (int) Math.ceil((double) countResults / pageSize);
