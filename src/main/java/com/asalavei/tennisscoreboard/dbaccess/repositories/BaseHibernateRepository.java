@@ -25,11 +25,10 @@ public abstract class BaseHibernateRepository<T> implements CrudRepository<T> {
     }
 
     protected <R> R executeInTransaction(Function<Session, R> action) {
-        Session session = null;
         Transaction transaction = null;
 
         try {
-            session = sessionFactory.getCurrentSession();
+            Session session = sessionFactory.getCurrentSession();
             transaction = session.beginTransaction();
 
             R result = action.apply(session);
@@ -40,8 +39,6 @@ public abstract class BaseHibernateRepository<T> implements CrudRepository<T> {
         } catch (PersistenceException e) {
             rollbackTransaction(transaction);
             throw new DatabaseOperationException("Error occurred while performing database operation", e);
-        } finally {
-            closeSession(session);
         }
     }
 
@@ -52,16 +49,6 @@ public abstract class BaseHibernateRepository<T> implements CrudRepository<T> {
             }
         } catch (Exception e) {
             log.log(Level.SEVERE, "Exception while rolling back transaction", e);
-        }
-    }
-
-    protected static void closeSession(Session session) {
-        if (session != null) {
-            try {
-                session.close();
-            } catch (Exception e) {
-                log.log(Level.SEVERE, "Exception while closing session", e);
-            }
         }
     }
 }
