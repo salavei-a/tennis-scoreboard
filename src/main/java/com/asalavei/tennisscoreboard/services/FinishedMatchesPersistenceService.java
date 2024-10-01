@@ -13,11 +13,11 @@ public class FinishedMatchesPersistenceService {
 
     private final MatchEntityMapper mapper = Mappers.getMapper(MatchEntityMapper.class);
 
-    public Match persist(Match match) {
+    public Match save(Match match) {
         return mapper.toDto(matchRepository.save(mapper.toEntity(match)));
     }
 
-    public FinishedMatches findAllFinishedMatches(int pageNumber, int pageSize) {
+    public FinishedMatches findAll(int pageNumber, int pageSize) {
         return FinishedMatches.builder()
                 .matches(mapper.toDto(matchRepository.findAll(pageNumber, pageSize)))
                 .totalPage(matchRepository.countTotalPages(pageSize))
@@ -26,7 +26,7 @@ public class FinishedMatchesPersistenceService {
 
     }
 
-    public FinishedMatches findAllFinishedMatchesByPlayer(String name, int pageNumber, int pageSize) {
+    public FinishedMatches findAllByPlayerName(String name, int pageNumber, int pageSize) {
         return FinishedMatches.builder()
                 .matches(mapper.toDto(matchRepository.findAllByPlayerName(name, pageNumber, pageSize)))
                 .totalPage(matchRepository.countTotalPagesByPlayerName(name, pageSize))

@@ -56,8 +56,8 @@ public class MatchScoreController extends HttpServlet {
         Match calculatedMatch = matchScoreCalculationService.calculate(match, pointWinnerUuid);
 
         if (calculatedMatch.getWinner() != null) {
-            ongoingMatchesService.removeMatch(matchUuid);
-            finishedMatchesPersistenceService.persist(calculatedMatch);
+            ongoingMatchesService.remove(matchUuid);
+            finishedMatchesPersistenceService.save(calculatedMatch);
 
             request.setAttribute("match", mapper.toResponseDto(calculatedMatch));
             request.getRequestDispatcher("match-winner.jsp").forward(request, response);

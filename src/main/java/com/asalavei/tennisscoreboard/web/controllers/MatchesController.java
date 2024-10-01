@@ -57,9 +57,9 @@ public class MatchesController extends HttpServlet {
 
     private void setMatchesAttributes(HttpServletRequest request, String playerName, int pageNumber) {
         if (playerName == null) {
-            request.setAttribute("matches", mapper.toResponseDto(service.findAllFinishedMatches(pageNumber, DEFAULT_PAGE_SIZE)));
+            request.setAttribute("matches", mapper.toResponseDto(service.findAll(pageNumber, DEFAULT_PAGE_SIZE)));
         } else {
-            request.setAttribute("matches", mapper.toResponseDto(service.findAllFinishedMatchesByPlayer(playerName, pageNumber, DEFAULT_PAGE_SIZE)));
+            request.setAttribute("matches", mapper.toResponseDto(service.findAllByPlayerName(playerName, pageNumber, DEFAULT_PAGE_SIZE)));
         }
     }
 }
