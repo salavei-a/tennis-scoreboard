@@ -93,6 +93,10 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             text-align: center;
         }
+        .no-matches {
+            width: 100%;
+            text-align: center;
+        }
         .player-name {
             font-size: 18px;
             text-align: left;
@@ -221,7 +225,7 @@
         <%     }
         } else {
         %>
-        <p>No finished matches available</p>
+        <p class="no-matches">No finished matches available</p>
         <% } %>
     </div>
 
