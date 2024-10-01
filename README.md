@@ -15,6 +15,8 @@ The Tennis Scoreboard is a web application that implements a scoreboard for trac
 - **Maven**
 - **Flyway**
 - **Junit5**
+- **Lombok**
+- **MapStruct**
 - **JSP**
 - **HTML**
 - **CSS**
