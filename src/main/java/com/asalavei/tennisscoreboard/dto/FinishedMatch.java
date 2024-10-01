@@ -1,4 +1,4 @@
-package com.asalavei.tennisscoreboard.web.dto;
+package com.asalavei.tennisscoreboard.dto;
 
 import lombok.Builder;
 import lombok.Value;
@@ -7,9 +7,9 @@ import java.util.List;
 
 @Value
 @Builder
-public class FinishedMatchesResponseDto {
+public class FinishedMatch {
 
-    List<MatchResponseDto> matches;
+    List<Match> matches;
 
     String playerName;
 

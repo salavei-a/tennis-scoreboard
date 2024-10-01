@@ -1,9 +1,10 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.asalavei.tennisscoreboard.web.dto.MatchResponseDto" %>
-<%@ page import="com.asalavei.tennisscoreboard.web.dto.FinishedMatchesResponseDto" %>
+<%@ page import="com.asalavei.tennisscoreboard.web.dto.FinishedMatchResponseDto" %>
+<%@ page import="com.asalavei.tennisscoreboard.web.dto.FinishedMatchResponseDto" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%
-    FinishedMatchesResponseDto finishedMatchesResponseDto = (FinishedMatchesResponseDto) request.getAttribute("matches");
+    FinishedMatchResponseDto finishedMatchResponseDto = (FinishedMatchResponseDto) request.getAttribute("matches");
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -207,7 +208,7 @@
 
     <div class="matches-grid">
         <%
-            List<MatchResponseDto> matches = finishedMatchesResponseDto.getMatches();
+            List<MatchResponseDto> matches = finishedMatchResponseDto.getMatches();
 
             if (matches != null && !matches.isEmpty()) {
                 for (MatchResponseDto match : matches) {
@@ -235,10 +236,10 @@
 
     <div class="pagination">
         <%
-            int pageNumber = finishedMatchesResponseDto.getPageNumber();
-            int totalPages = finishedMatchesResponseDto.getTotalPage();
+            int pageNumber = finishedMatchResponseDto.getPageNumber();
+            int totalPages = finishedMatchResponseDto.getTotalPage();
 
-            String playerName = finishedMatchesResponseDto.getPlayerName();
+            String playerName = finishedMatchResponseDto.getPlayerName();
             String filterByPlayerName = playerName == null ? "" : "&filter_by_player_name=" + playerName;
 
             if (pageNumber > 1) {

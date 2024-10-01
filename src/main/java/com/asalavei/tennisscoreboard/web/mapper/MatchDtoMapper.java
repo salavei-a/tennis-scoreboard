@@ -1,9 +1,9 @@
 package com.asalavei.tennisscoreboard.web.mapper;
 
-import com.asalavei.tennisscoreboard.dto.FinishedMatches;
+import com.asalavei.tennisscoreboard.dto.FinishedMatch;
 import com.asalavei.tennisscoreboard.dto.Match;
 import com.asalavei.tennisscoreboard.dto.PlayerScore;
-import com.asalavei.tennisscoreboard.web.dto.FinishedMatchesResponseDto;
+import com.asalavei.tennisscoreboard.web.dto.FinishedMatchResponseDto;
 import com.asalavei.tennisscoreboard.web.dto.MatchRequestDto;
 import com.asalavei.tennisscoreboard.web.dto.MatchResponseDto;
 import com.asalavei.tennisscoreboard.web.dto.PlayerScoreResponseDto;
@@ -17,7 +17,7 @@ public interface MatchDtoMapper {
 
     MatchResponseDto toResponseDto(Match match);
 
-    FinishedMatchesResponseDto toResponseDto(FinishedMatches finishedMatches);
+    FinishedMatchResponseDto toResponseDto(FinishedMatch finishedMatch);
 
     @Mapping(target = "points", source = "displayPoints")
     PlayerScoreResponseDto toResponseDto(PlayerScore playerScore);
