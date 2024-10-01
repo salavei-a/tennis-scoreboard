@@ -16,8 +16,8 @@ import java.io.IOException;
 @WebServlet("/matches")
 public class MatchesController extends HttpServlet {
 
-    private static final int DEFAULT_PAGE = 1;
-    private static final int DEFAULT_SIZE = 12;
+    private static final int DEFAULT_PAGE_NUMBER = 1;
+    private static final int DEFAULT_PAGE_SIZE = 12;
 
     private final FinishedMatchesPersistenceService service = new FinishedMatchesPersistenceService();
 
@@ -30,7 +30,7 @@ public class MatchesController extends HttpServlet {
             return;
         }
 
-        int page = parsePageParam(request.getParameter("page"));
+        int pageNumber = parsePageNumber(request.getParameter("page"));
 
         String playerName = request.getParameter("filter_by_player_name");
 
@@ -41,29 +41,29 @@ public class MatchesController extends HttpServlet {
 
             DataValidator.validate(player);
 
-            setMatchesAttributesByPlayer(request, playerName, page);
+            setMatchesAttributesByPlayer(request, playerName, pageNumber);
         } else {
-            setMatchesAttributes(request, page);
+            setMatchesAttributes(request, pageNumber);
         }
 
         request.getRequestDispatcher("matches.jsp").forward(request, response);
     }
 
-    private int parsePageParam(String pageParam) {
+    private int parsePageNumber(String pageParam) {
         try {
-            return pageParam != null ? Integer.parseInt(pageParam) : DEFAULT_PAGE;
+            return pageParam != null ? Math.abs(Integer.parseInt(pageParam)) : DEFAULT_PAGE_NUMBER;
         } catch (NumberFormatException e) {
-            return DEFAULT_PAGE;
+            return DEFAULT_PAGE_NUMBER;
         }
     }
 
-    private void setMatchesAttributes(HttpServletRequest request, int page) {
-        request.setAttribute("totalPages", service.countTotalPages(DEFAULT_SIZE));
-        request.setAttribute("matches", mapper.toResponseDto(service.findAll(page, DEFAULT_SIZE)));
+    private void setMatchesAttributes(HttpServletRequest request, int pageNumber) {
+        request.setAttribute("totalPages", service.countTotalPages(DEFAULT_PAGE_SIZE));
+        request.setAttribute("matches", mapper.toResponseDto(service.findAll(pageNumber, DEFAULT_PAGE_SIZE)));
     }
 
-    private void setMatchesAttributesByPlayer(HttpServletRequest request, String playerName, int page) {
-        request.setAttribute("totalPages", service.countTotalPagesByPlayerName(playerName, DEFAULT_SIZE));
-        request.setAttribute("matches", mapper.toResponseDto(service.findAllByPlayerName(playerName, page, DEFAULT_SIZE)));
+    private void setMatchesAttributesByPlayer(HttpServletRequest request, String playerName, int pageNumber) {
+        request.setAttribute("totalPages", service.countTotalPagesByPlayerName(playerName, DEFAULT_PAGE_SIZE));
+        request.setAttribute("matches", mapper.toResponseDto(service.findAllByPlayerName(playerName, pageNumber, DEFAULT_PAGE_SIZE)));
     }
 }
