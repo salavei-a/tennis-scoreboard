@@ -1,7 +1,10 @@
 <%@ page import="java.util.List" %>
-<%@ page import="java.nio.charset.StandardCharsets" %>
 <%@ page import="com.asalavei.tennisscoreboard.web.dto.MatchResponseDto" %>
+<%@ page import="com.asalavei.tennisscoreboard.web.dto.FinishedMatchesResponseDto" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
+<%
+    FinishedMatchesResponseDto finishedMatchesResponseDto = (FinishedMatchesResponseDto) request.getAttribute("matches");
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -204,7 +207,8 @@
 
     <div class="matches-grid">
         <%
-            List<MatchResponseDto> matches = (List<MatchResponseDto>) request.getAttribute("matches");
+            List<MatchResponseDto> matches = finishedMatchesResponseDto.getMatches();
+
             if (matches != null && !matches.isEmpty()) {
                 for (MatchResponseDto match : matches) {
                     String firstPlayerName = match.getFirstPlayer().getName();
@@ -231,55 +235,33 @@
 
     <div class="pagination">
         <%
-            int currentPage = 1;
-            String pageParam = request.getParameter("page");
-            if (pageParam != null) {
-                try {
-                    currentPage = Integer.parseInt(pageParam);
-                    if (currentPage < 1) currentPage = 1;
-                } catch (NumberFormatException e) {
-                    currentPage = 1;
-                }
-            }
+            int pageNumber = finishedMatchesResponseDto.getPageNumber();
+            int totalPages = finishedMatchesResponseDto.getTotalPage();
 
-            int totalPages = 1;
-            Object totalPagesAttr = request.getAttribute("totalPages");
-            if (totalPagesAttr != null) {
-                try {
-                    totalPages = Integer.parseInt(totalPagesAttr.toString());
-                    if (totalPages < 1) totalPages = 1;
-                } catch (NumberFormatException e) {
-                    totalPages = 1;
-                }
-            }
+            String playerName = finishedMatchesResponseDto.getPlayerName();
+            String filterByPlayerName = playerName == null ? "" : "&filter_by_player_name=" + playerName;
 
-            String playerNameFilter = request.getParameter("filter_by_player_name");
-            String filterParam = "";
-            if (playerNameFilter != null && !playerNameFilter.trim().isEmpty()) {
-                filterParam = "&filter_by_player_name=" + java.net.URLEncoder.encode(playerNameFilter, StandardCharsets.UTF_8);
-            }
-
-            if (currentPage > 1) {
+            if (pageNumber > 1) {
         %>
-        <a href="<%= request.getContextPath() %>/matches?page=<%= currentPage - 1 %><%= filterParam %>">Previous</a>
+        <a href="<%= request.getContextPath() %>/matches?page=<%= pageNumber - 1 %><%= filterByPlayerName %>">Previous</a>
         <%
             }
 
             for (int i = 1; i <= totalPages; i++) {
-                if (i == currentPage) {
+                if (i == pageNumber) {
         %>
         <a href="#" class="active"><%= i %></a>
         <%
         } else {
         %>
-        <a href="<%= request.getContextPath() %>/matches?page=<%= i %><%= filterParam %>"><%= i %></a>
+        <a href="<%= request.getContextPath() %>/matches?page=<%= i %><%= filterByPlayerName %>"><%= i %></a>
         <%
                 }
             }
 
-            if (currentPage < totalPages) {
+            if (pageNumber < totalPages) {
         %>
-        <a href="<%= request.getContextPath() %>/matches?page=<%= currentPage + 1 %><%= filterParam %>">Next</a>
+        <a href="<%= request.getContextPath() %>/matches?page=<%= pageNumber + 1 %><%= filterByPlayerName %>">Next</a>
         <%
             }
         %>
