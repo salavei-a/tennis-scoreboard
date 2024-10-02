@@ -1,6 +1,7 @@
 <%@ page import="com.asalavei.tennisscoreboard.web.dto.MatchResponseDto" %>
 <%@ page import="com.asalavei.tennisscoreboard.web.dto.PlayerResponseDto" %>
 <%@ page import="com.asalavei.tennisscoreboard.web.dto.PlayerScoreResponseDto" %>
+<%@ page import="com.asalavei.tennisscoreboard.enums.PlayerNumber" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%
     MatchResponseDto match = (MatchResponseDto) request.getAttribute("match");
@@ -144,19 +145,31 @@
             <td><%= firstPlayer.getName() %></td>
             <td><%= firstPlayerScore.getSets() %></td>
             <td><%= firstPlayerScore.getGames() %></td>
-            <td><%= firstPlayerScore.getPoints() %></td>
+            <td>
+                <%
+                    Integer firstPlayerTiebreakPoints = firstPlayerScore.getTiebreakPoints();
+                %>
+                <%= firstPlayerTiebreakPoints == null
+                    ? firstPlayerScore.getGameScore().getDisplay()
+                    : firstPlayerTiebreakPoints %></td>
         </tr>
         <tr>
             <td><%= secondPlayer.getName() %></td>
             <td><%= secondPlayerScore.getSets() %></td>
             <td><%= secondPlayerScore.getGames() %></td>
-            <td><%= secondPlayerScore.getPoints() %></td>
+            <td>
+                <%
+                    Integer secondPlayerTiebreakPoints = secondPlayerScore.getTiebreakPoints();
+                %>
+                <%= secondPlayerTiebreakPoints == null
+                    ? secondPlayerScore.getGameScore().getDisplay()
+                    : secondPlayerTiebreakPoints %></td>
         </tr>
     </table>
 
     <div class="btn-form">
         <form action="<%= request.getContextPath() %>/match-score?uuid=<%= match.getUuid() %>" method="post">
-            <input type="hidden" name="player" value="<%= match.getFirstPlayer().getUuid() %>">
+            <input type="hidden" name="player_number" value="<%= PlayerNumber.FIRST_PLAYER.getNumber() %>">
             <button type="submit" class="btn" onclick="this.disabled = true; this.form.submit();">
                 <%= match.getFirstPlayer().getName() %> Won the Point
             </button>
@@ -166,7 +179,7 @@
 
     <div class="btn-form">
         <form action="<%= request.getContextPath() %>/match-score?uuid=<%= match.getUuid() %>" method="post">
-            <input type="hidden" name="player" value="<%= match.getSecondPlayer().getUuid() %>">
+            <input type="hidden" name="player_number" value="<%= PlayerNumber.SECOND_PLAYER.getNumber() %>">
             <button type="submit" class="btn" onclick="this.disabled = true; this.form.submit();">
                 <%= match.getSecondPlayer().getName() %> Won the Point</button>
         </form>

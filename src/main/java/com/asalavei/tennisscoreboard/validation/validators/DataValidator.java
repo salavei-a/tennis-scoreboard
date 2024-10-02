@@ -1,6 +1,7 @@
 package com.asalavei.tennisscoreboard.validation.validators;
 
 import com.asalavei.tennisscoreboard.dto.Match;
+import com.asalavei.tennisscoreboard.enums.PlayerNumber;
 import com.asalavei.tennisscoreboard.exceptions.ForbiddenException;
 import com.asalavei.tennisscoreboard.web.dto.MatchRequestDto;
 import jakarta.validation.ConstraintViolation;
@@ -9,7 +10,6 @@ import jakarta.validation.Validator;
 import com.asalavei.tennisscoreboard.exceptions.ValidationException;
 import lombok.extern.java.Log;
 
-import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -22,17 +22,25 @@ public class DataValidator {
     private DataValidator() {
     }
 
-    public static void validatePointWinner(UUID pointWinnerUuid, Match match) {
-        if (isPlayerNotInMatch(pointWinnerUuid, match)) {
-            throw new ForbiddenException(String.format("Player with UUID=%s is not participating in match=%s", pointWinnerUuid, match));
+    public static int getValidatedPointWinnerNumber(String number, Match match) {
+        int pointWinnerNumber;
+
+        try {
+            pointWinnerNumber = Integer.parseInt(number);
+        } catch (NumberFormatException e) {
+            throw new ForbiddenException(String.format("Invalid number: %s", number));
         }
+
+        if (isInvalidPlayerNumber(pointWinnerNumber)) {
+            throw new ForbiddenException(String.format("Player with number=%s is not participating in match=%s", pointWinnerNumber, match));
+        }
+
+        return pointWinnerNumber;
     }
 
-    private static boolean isPlayerNotInMatch(UUID pointWinnerUuid, Match match) {
-        return !Arrays.asList(
-                match.getFirstPlayer().getUuid(),
-                match.getSecondPlayer().getUuid()
-        ).contains(pointWinnerUuid);
+    private static boolean isInvalidPlayerNumber(int pointWinnerNumber) {
+        return pointWinnerNumber != PlayerNumber.FIRST_PLAYER.getNumber() &&
+                pointWinnerNumber != PlayerNumber.SECOND_PLAYER.getNumber();
     }
 
     public static void validateMatch(MatchRequestDto match) {

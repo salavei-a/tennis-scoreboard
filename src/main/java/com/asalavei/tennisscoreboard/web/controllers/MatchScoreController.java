@@ -47,13 +47,12 @@ public class MatchScoreController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         UUID matchUuid = DataValidator.getValidatedUuid(request.getParameter("uuid"));
-        UUID pointWinnerUuid = DataValidator.getValidatedUuid(request.getParameter("player"));
 
         Match match = ongoingMatchesService.getOngoingMatch(matchUuid);
 
-        DataValidator.validatePointWinner(pointWinnerUuid, match);
+        int pointWinnerNumber = DataValidator.getValidatedPointWinnerNumber(request.getParameter("player_number"), match);
 
-        Match calculatedMatch = matchScoreCalculationService.calculate(match, pointWinnerUuid);
+        Match calculatedMatch = matchScoreCalculationService.calculate(match, pointWinnerNumber);
 
         if (calculatedMatch.getWinner() != null) {
             ongoingMatchesService.remove(matchUuid);
