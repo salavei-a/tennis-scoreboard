@@ -2,7 +2,6 @@ package com.asalavei.tennisscoreboard.dbaccess.repositories;
 
 import com.asalavei.tennisscoreboard.dbaccess.config.HibernateConfig;
 import com.asalavei.tennisscoreboard.exceptions.DatabaseOperationException;
-import jakarta.persistence.PersistenceException;
 import lombok.extern.java.Log;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -36,7 +35,7 @@ public abstract class BaseHibernateRepository<T> implements CrudRepository<T> {
             transaction.commit();
 
             return result;
-        } catch (PersistenceException e) {
+        } catch (RuntimeException e) {
             rollbackTransaction(transaction);
             throw new DatabaseOperationException("Error occurred while performing database operation", e);
         }

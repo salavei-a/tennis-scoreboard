@@ -6,10 +6,8 @@ import com.asalavei.tennisscoreboard.dbaccess.repositories.PlayerHibernateReposi
 import com.asalavei.tennisscoreboard.dbaccess.repositories.PlayerRepository;
 import com.asalavei.tennisscoreboard.dto.Player;
 import com.asalavei.tennisscoreboard.dto.PlayerScore;
-import com.asalavei.tennisscoreboard.enums.GamePoint;
+import com.asalavei.tennisscoreboard.enums.GameScore;
 import org.mapstruct.factory.Mappers;
-
-import java.util.UUID;
 
 public class PlayerService {
 
@@ -25,12 +23,11 @@ public class PlayerService {
 
     private Player buildPlayer(PlayerEntity entity) {
         return Player.builder()
-                .uuid(UUID.randomUUID())
                 .id(entity.getId())
                 .name(entity.getName())
                 .playerScore(
                         PlayerScore.builder()
-                                .displayPoints(GamePoint.LOVE.getDisplay())
+                                .gameScore(GameScore.LOVE)
                                 .build()
                 )
                 .build();

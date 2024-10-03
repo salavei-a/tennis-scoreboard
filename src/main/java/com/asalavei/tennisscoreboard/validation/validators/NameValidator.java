@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class NameValidator implements ConstraintValidator<ValidName, String> {
 
-    private static final String NAME_PATTERN = "^[A-Za-z]+([\\s'\\-][A-Za-z]+)*+$";
+    private static final String NAME_PATTERN = "([A-Za-z][A-Za-z'.-]*)(\\s+([A-Za-z][A-Za-z'.-]*))*";
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {

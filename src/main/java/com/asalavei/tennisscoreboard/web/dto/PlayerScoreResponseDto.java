@@ -1,5 +1,6 @@
 package com.asalavei.tennisscoreboard.web.dto;
 
+import com.asalavei.tennisscoreboard.enums.GameScore;
 import lombok.Builder;
 import lombok.Value;
 
@@ -11,5 +12,7 @@ public class PlayerScoreResponseDto {
 
     int games;
 
-    String points;
+    GameScore gameScore;
+
+    Integer tiebreakPoints;
 }
