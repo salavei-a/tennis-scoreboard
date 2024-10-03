@@ -74,7 +74,7 @@ public class MatchScoreCalculationService {
         pointWinnerScore.setGameScore(GameScore.next(pointWinnerGameScore));
     }
 
-    private static void ensureTiebreakPointsInitialized(PlayerScore pointWinnerScore, PlayerScore opponentScore) {
+    private void ensureTiebreakPointsInitialized(PlayerScore pointWinnerScore, PlayerScore opponentScore) {
         if (pointWinnerScore.getTiebreakPoints() == null && opponentScore.getTiebreakPoints() == null) {
             pointWinnerScore.setTiebreakPoints(0);
             opponentScore.setTiebreakPoints(0);

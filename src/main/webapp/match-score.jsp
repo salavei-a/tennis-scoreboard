@@ -8,9 +8,6 @@
 
     PlayerResponseDto firstPlayer = match.getFirstPlayer();
     PlayerResponseDto secondPlayer = match.getSecondPlayer();
-
-    PlayerScoreResponseDto firstPlayerScore = firstPlayer.getPlayerScore();
-    PlayerScoreResponseDto secondPlayerScore = secondPlayer.getPlayerScore();
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -141,6 +138,10 @@
             <th>Games</th>
             <th>Points</th>
         </tr>
+        <%
+            PlayerScoreResponseDto firstPlayerScore = firstPlayer.getPlayerScore();
+            PlayerScoreResponseDto secondPlayerScore = secondPlayer.getPlayerScore();
+        %>
         <tr>
             <td><%= firstPlayer.getName() %></td>
             <td><%= firstPlayerScore.getSets() %></td>
