@@ -16,45 +16,28 @@ public class MatchScoreCalculationService {
     private static final int SIX_GAMES = 6;
 
     public Match calculate(Match match, int pointWinnerNumber) {
-        Player firstPlayer = match.getFirstPlayer();
-        Player secondPlayer = match.getSecondPlayer();
-
-        PlayerScore firstPlayerScore = firstPlayer.getPlayerScore();
-        PlayerScore secondPlayerScore = secondPlayer.getPlayerScore();
-
         Player pointWinner = determinePlayer(match, pointWinnerNumber);
 
         PlayerScore pointWinnerScore = pointWinner.getPlayerScore();
         PlayerScore opponentScore = determinePlayer(match, PlayerNumber.opposite(pointWinnerNumber)).getPlayerScore();
 
-        boolean isTiebreak = isTiebreak(firstPlayerScore, secondPlayerScore);
+        wonPoint(pointWinnerScore, opponentScore);
 
-        wonPoint(pointWinnerScore, opponentScore, isTiebreak);
-
-        if (isGameFinished(firstPlayerScore, secondPlayerScore, isTiebreak)) {
+        if (isGameFinished(pointWinnerScore, opponentScore)) {
             wonGame(pointWinnerScore);
-            resetPoints(firstPlayerScore, secondPlayerScore);
+            resetPoints(pointWinnerScore, opponentScore);
 
-            if (isSetFinished(firstPlayerScore, secondPlayerScore)) {
+            if (isSetFinished(pointWinnerScore, opponentScore)) {
                 wonSet(pointWinnerScore);
-                resetGames(firstPlayerScore, secondPlayerScore);
+                resetGames(pointWinnerScore, opponentScore);
             }
 
-            if (isMatchFinished(firstPlayerScore, secondPlayerScore)) {
-                return Match.builder()
-                        .uuid(match.getUuid())
-                        .firstPlayer(firstPlayer)
-                        .secondPlayer(secondPlayer)
-                        .winner(pointWinner)
-                        .build();
+            if (isMatchFinished(pointWinnerScore, opponentScore)) {
+                match.setWinner(pointWinner);
             }
         }
 
-        return Match.builder()
-                .uuid(match.getUuid())
-                .firstPlayer(firstPlayer)
-                .secondPlayer(secondPlayer)
-                .build();
+        return match;
     }
 
     private Player determinePlayer(Match match, int playerNumber) {
@@ -69,45 +52,51 @@ public class MatchScoreCalculationService {
         throw new IllegalArgumentException("Invalid player number: " + playerNumber);
     }
 
-    private void wonPoint(PlayerScore pointWinnerScore, PlayerScore opponentScore, boolean isTiebreak) {
-        if (isTiebreak) {
-            if (pointWinnerScore.getTiebreakPoints() == null && opponentScore.getTiebreakPoints() == null) {
-                pointWinnerScore.setTiebreakPoints(0);
-                opponentScore.setTiebreakPoints(0);
-            }
-
+    private void wonPoint(PlayerScore pointWinnerScore, PlayerScore opponentScore) {
+        if (isTiebreak(pointWinnerScore, opponentScore)) {
+            ensureTiebreakPointsInitialized(pointWinnerScore, opponentScore);
             wonTiebreakPoint(pointWinnerScore);
             return;
         }
 
-        GameScore pointWinnerPoints = pointWinnerScore.getGameScore();
-        GameScore opponentPoints = opponentScore.getGameScore();
+        GameScore pointWinnerGameScore = pointWinnerScore.getGameScore();
 
-        if (isForty(pointWinnerPoints)) {
-            if (isAdvantage(opponentPoints)) {
-                opponentScore.setGameScore(GameScore.FORTY);
-                return;
-            }
+        if (isForty(pointWinnerGameScore)) {
+            handleFortyPointWinner(pointWinnerScore, opponentScore, opponentScore.getGameScore());
+            return;
+        }
 
-            if (isForty(opponentPoints)) {
-                pointWinnerScore.setGameScore(GameScore.ADVANTAGE);
-                return;
-            }
-
+        if (isAdvantage(pointWinnerGameScore)) {
             pointWinnerScore.setGameScore(GameScore.GAME_WON);
             return;
         }
 
-        if (isAdvantage(pointWinnerPoints)) {
-            pointWinnerScore.setGameScore(GameScore.GAME_WON);
-            return;
-        }
+        pointWinnerScore.setGameScore(GameScore.next(pointWinnerGameScore));
+    }
 
-        pointWinnerScore.setGameScore(GameScore.next(pointWinnerPoints));
+    private static void ensureTiebreakPointsInitialized(PlayerScore pointWinnerScore, PlayerScore opponentScore) {
+        if (pointWinnerScore.getTiebreakPoints() == null && opponentScore.getTiebreakPoints() == null) {
+            pointWinnerScore.setTiebreakPoints(0);
+            opponentScore.setTiebreakPoints(0);
+        }
     }
 
     private void wonTiebreakPoint(PlayerScore pointWinnerScore) {
         pointWinnerScore.setTiebreakPoints(pointWinnerScore.getTiebreakPoints() + 1);
+    }
+
+    private void handleFortyPointWinner(PlayerScore pointWinnerScore, PlayerScore opponentScore, GameScore opponentGameScore) {
+        if (isAdvantage(opponentGameScore)) {
+            opponentScore.setGameScore(GameScore.FORTY);
+            return;
+        }
+
+        if (isForty(opponentGameScore)) {
+            pointWinnerScore.setGameScore(GameScore.ADVANTAGE);
+            return;
+        }
+
+        pointWinnerScore.setGameScore(GameScore.GAME_WON);
     }
 
     private boolean isForty(GameScore gameScore) {
@@ -118,68 +107,68 @@ public class MatchScoreCalculationService {
         return gameScore == GameScore.ADVANTAGE;
     }
 
-    private void wonGame(PlayerScore playerScore) {
-        playerScore.setGames(playerScore.getGames() + 1);
+    private void wonGame(PlayerScore pointWinnerScore) {
+        pointWinnerScore.setGames(pointWinnerScore.getGames() + 1);
     }
 
-    private void wonSet(PlayerScore playerScore) {
-        playerScore.setSets(playerScore.getSets() + 1);
+    private void wonSet(PlayerScore pointWinnerScore) {
+        pointWinnerScore.setSets(pointWinnerScore.getSets() + 1);
     }
 
-    private boolean isGameFinished(PlayerScore firstPlayerScore, PlayerScore secondPlayerScore, boolean isTiebreak) {
-        if (isTiebreak) {
-            Integer firstPlayerPoints = firstPlayerScore.getTiebreakPoints();
-            Integer secondPlayerPoints = secondPlayerScore.getTiebreakPoints();
+    private boolean isGameFinished(PlayerScore pointWinnerScore, PlayerScore opponentScore) {
+        if (isTiebreak(pointWinnerScore, opponentScore)) {
+            Integer pointWinnerTiebreakPoints = pointWinnerScore.getTiebreakPoints();
+            Integer opponentTiebreakPoints = opponentScore.getTiebreakPoints();
 
-            return Math.max(firstPlayerPoints, secondPlayerPoints) >= MIN_POINTS_TO_WIN_TIEBREAK &&
-                    Math.abs(firstPlayerPoints - secondPlayerPoints) > MIN_TIEBREAK_POINT_DIFFERENCE;
+            return Math.max(pointWinnerTiebreakPoints, opponentTiebreakPoints) >= MIN_POINTS_TO_WIN_TIEBREAK &&
+                    Math.abs(pointWinnerTiebreakPoints - opponentTiebreakPoints) > MIN_TIEBREAK_POINT_DIFFERENCE;
         }
 
-        return GameScore.GAME_WON == firstPlayerScore.getGameScore() ||
-                GameScore.GAME_WON == secondPlayerScore.getGameScore();
+        return GameScore.GAME_WON == pointWinnerScore.getGameScore() ||
+                GameScore.GAME_WON == opponentScore.getGameScore();
     }
 
-    private boolean isSetFinished(PlayerScore firstPlayerScore, PlayerScore secondPlayerScore) {
-        int firstPlayerGames = firstPlayerScore.getGames();
-        int secondPlayerGames = secondPlayerScore.getGames();
+    private boolean isSetFinished(PlayerScore pointWinnerScore, PlayerScore opponentScore) {
+        int pointWinnerGames = pointWinnerScore.getGames();
+        int opponentGames = opponentScore.getGames();
 
-        if (Math.max(firstPlayerGames, secondPlayerGames) >= MIN_GAMES_TO_WIN_A_SET &&
-                Math.abs(firstPlayerGames - secondPlayerGames) > MIN_GAME_DIFFERENCE) {
+        if (Math.max(pointWinnerGames, opponentGames) >= MIN_GAMES_TO_WIN_A_SET &&
+                Math.abs(pointWinnerGames - opponentGames) > MIN_GAME_DIFFERENCE) {
             return true;
         }
 
-        if (Math.max(firstPlayerGames, secondPlayerGames) > MIN_GAMES_TO_WIN_A_SET &&
-                Math.min(firstPlayerGames, secondPlayerGames) == MIN_GAMES_TO_WIN_A_SET) {
+        if (Math.max(pointWinnerGames, opponentGames) > MIN_GAMES_TO_WIN_A_SET &&
+                Math.min(pointWinnerGames, opponentGames) == MIN_GAMES_TO_WIN_A_SET) {
             return true;
         }
 
         return false;
     }
 
-    private boolean isMatchFinished(PlayerScore firstPlayerScore, PlayerScore secondPlayerScore) {
-        return firstPlayerScore.getSets() == MIN_SETS_TO_WIN_A_MATCH ||
-                secondPlayerScore.getSets() == MIN_SETS_TO_WIN_A_MATCH;
+    private boolean isMatchFinished(PlayerScore pointWinnerScore, PlayerScore opponentScore) {
+        return pointWinnerScore.getSets() == MIN_SETS_TO_WIN_A_MATCH ||
+                opponentScore.getSets() == MIN_SETS_TO_WIN_A_MATCH;
     }
 
-    private void resetPoints(PlayerScore firstPlayerScore, PlayerScore secondPlayerScore) {
-        firstPlayerScore.setGameScore(GameScore.LOVE);
-        secondPlayerScore.setGameScore(GameScore.LOVE);
+    private void resetPoints(PlayerScore pointWinnerScore, PlayerScore opponentScore) {
+        pointWinnerScore.setGameScore(GameScore.LOVE);
+        opponentScore.setGameScore(GameScore.LOVE);
 
-        if (isTiebreak(firstPlayerScore, secondPlayerScore)) {
-            firstPlayerScore.setTiebreakPoints(0);
-            secondPlayerScore.setTiebreakPoints(0);
+        if (isTiebreak(pointWinnerScore, opponentScore)) {
+            pointWinnerScore.setTiebreakPoints(0);
+            opponentScore.setTiebreakPoints(0);
         } else {
-            firstPlayerScore.setTiebreakPoints(null);
-            secondPlayerScore.setTiebreakPoints(null);
+            pointWinnerScore.setTiebreakPoints(null);
+            opponentScore.setTiebreakPoints(null);
         }
     }
 
-    private boolean isTiebreak(PlayerScore firstPlayerScore, PlayerScore secondPlayerScore) {
-        return firstPlayerScore.getGames() == SIX_GAMES && secondPlayerScore.getGames() == SIX_GAMES;
+    private void resetGames(PlayerScore pointWinnerScore, PlayerScore opponentScore) {
+        pointWinnerScore.setGames(0);
+        opponentScore.setGames(0);
     }
 
-    private void resetGames(PlayerScore firstPlayerScore, PlayerScore secondPlayerScore) {
-        firstPlayerScore.setGames(0);
-        secondPlayerScore.setGames(0);
+    private boolean isTiebreak(PlayerScore pointWinnerScore, PlayerScore opponentScore) {
+        return pointWinnerScore.getGames() == SIX_GAMES && opponentScore.getGames() == SIX_GAMES;
     }
 }

@@ -1,21 +1,21 @@
 package com.asalavei.tennisscoreboard.dto;
 
-import lombok.Value;
+import lombok.Data;
 import lombok.Builder;
 
 import java.util.UUID;
 
-@Value
+@Data
 @Builder
 public class Match {
 
-    UUID uuid;
+    private final UUID uuid;
 
-    Integer id;
+    private final Integer id;
 
-    Player firstPlayer;
+    private final Player firstPlayer;
 
-    Player secondPlayer;
+    private final Player secondPlayer;
 
-    Player winner;
+    private Player winner;
 }

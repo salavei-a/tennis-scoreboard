@@ -27,19 +27,17 @@ class MatchScoreCalculationServiceTest {
 
     @Test
     void calculate_shouldReturnWinner_whenMatchFinished() {
+        Player firstPlayer = Player.builder()
+                .playerScore(buildPlayerScore(ONE_SET, FIVE_GAMES, FORTY))
+                .build();
+
+        Player secondPlayer = Player.builder()
+                .playerScore(buildPlayerScore(ZERO_SETS, FOUR_GAMES, THIRTY))
+                .build();
+
         Match match = Match.builder()
-                .firstPlayer(
-                        Player.builder()
-                                .playerScore(buildPlayerScore(ONE_SET, FIVE_GAMES, FORTY)
-                                )
-                                .build()
-                )
-                .secondPlayer(
-                        Player.builder()
-                                .playerScore(buildPlayerScore(ZERO_SETS, FOUR_GAMES, THIRTY)
-                                )
-                                .build()
-                )
+                .firstPlayer(firstPlayer)
+                .secondPlayer(secondPlayer)
                 .build();
 
         Match calculatedMatch = service.calculate(match, FIRST_PLAYER_NUMBER);
@@ -49,17 +47,17 @@ class MatchScoreCalculationServiceTest {
 
     @Test
     void calculate_shouldNotReturnWinner_whenOneSetIsWonAndGamesAreFiveAll() {
+        Player firstPlayer = Player.builder()
+                .playerScore(buildPlayerScore(ONE_SET, FIVE_GAMES, FORTY))
+                .build();
+
+        Player secondPlayer = Player.builder()
+                .playerScore(buildPlayerScore(ONE_SET, FIVE_GAMES, LOVE))
+                .build();
+
         Match match = Match.builder()
-                .firstPlayer(
-                        Player.builder()
-                                .playerScore(buildPlayerScore(ONE_SET, FIVE_GAMES, FORTY))
-                                .build()
-                )
-                .secondPlayer(
-                        Player.builder()
-                                .playerScore(buildPlayerScore(ONE_SET, FIVE_GAMES, LOVE))
-                                .build()
-                )
+                .firstPlayer(firstPlayer)
+                .secondPlayer(secondPlayer)
                 .build();
 
         Match calculatedMatch = service.calculate(match, FIRST_PLAYER_NUMBER);
@@ -71,17 +69,17 @@ class MatchScoreCalculationServiceTest {
 
     @Test
     void calculate_shouldNotFinishGame_whenDeuce() {
+        Player firstPlayer = Player.builder()
+                .playerScore(buildPlayerScore(ZERO_SETS, ZERO_GAMES, FORTY))
+                .build();
+
+        Player secondPlayer = Player.builder()
+                .playerScore(buildPlayerScore(ZERO_SETS, ZERO_GAMES, FORTY))
+                .build();
+
         Match match = Match.builder()
-                .firstPlayer(
-                        Player.builder()
-                                .playerScore(buildPlayerScore(ZERO_SETS, ZERO_GAMES, FORTY))
-                                .build()
-                )
-                .secondPlayer(
-                        Player.builder()
-                                .playerScore(buildPlayerScore(ZERO_SETS, ZERO_GAMES, FORTY))
-                                .build()
-                )
+                .firstPlayer(firstPlayer)
+                .secondPlayer(secondPlayer)
                 .build();
 
         Match calculatedMatch = service.calculate(match, FIRST_PLAYER_NUMBER);
@@ -93,17 +91,17 @@ class MatchScoreCalculationServiceTest {
 
     @Test
     void calculate_shouldIncrementPointsForWinner_whenPlayerWinsPoint() {
+        Player firstPlayer = Player.builder()
+                .playerScore(buildPlayerScore(ZERO_SETS, ZERO_GAMES, LOVE))
+                .build();
+
+        Player secondPlayer = Player.builder()
+                .playerScore(buildPlayerScore(ZERO_SETS, ZERO_GAMES, THIRTY))
+                .build();
+
         Match match = Match.builder()
-                .firstPlayer(
-                        Player.builder()
-                                .playerScore(buildPlayerScore(ZERO_SETS, ZERO_GAMES, LOVE))
-                                .build()
-                )
-                .secondPlayer(
-                        Player.builder()
-                                .playerScore(buildPlayerScore(ZERO_SETS, ZERO_GAMES, THIRTY))
-                                .build()
-                )
+                .firstPlayer(firstPlayer)
+                .secondPlayer(secondPlayer)
                 .build();
 
         Match calculatedMatch = service.calculate(match, SECOND_PLAYER_NUMBER);
@@ -115,17 +113,17 @@ class MatchScoreCalculationServiceTest {
 
     @Test
     void calculate_shouldIncrementGamesForWinnerPoint_whenFortyAndLovePoints() {
+        Player firstPlayer = Player.builder()
+                .playerScore(buildPlayerScore(ZERO_SETS, ZERO_GAMES, FORTY))
+                .build();
+
+        Player secondPlayer = Player.builder()
+                .playerScore(buildPlayerScore(ZERO_SETS, ZERO_GAMES, LOVE))
+                .build();
+
         Match match = Match.builder()
-                .firstPlayer(
-                        Player.builder()
-                                .playerScore(buildPlayerScore(ZERO_SETS, ZERO_GAMES, FORTY))
-                                .build()
-                )
-                .secondPlayer(
-                        Player.builder()
-                                .playerScore(buildPlayerScore(ZERO_SETS, ZERO_GAMES, LOVE))
-                                .build()
-                )
+                .firstPlayer(firstPlayer)
+                .secondPlayer(secondPlayer)
                 .build();
 
         Match calculatedMatch = service.calculate(match, FIRST_PLAYER_NUMBER);
@@ -136,17 +134,17 @@ class MatchScoreCalculationServiceTest {
 
     @Test
     void calculate_shouldIncrementSetsForWinnerPoint_whenPlayerWinsSet() {
+        Player firstPlayer = Player.builder()
+                .playerScore(buildPlayerScore(ZERO_SETS, FIVE_GAMES, FORTY))
+                .build();
+
+        Player secondPlayer = Player.builder()
+                .playerScore(buildPlayerScore(ZERO_SETS, FOUR_GAMES, LOVE))
+                .build();
+
         Match match = Match.builder()
-                .firstPlayer(
-                        Player.builder()
-                                .playerScore(buildPlayerScore(ZERO_SETS, FIVE_GAMES, FORTY))
-                                .build()
-                )
-                .secondPlayer(
-                        Player.builder()
-                                .playerScore(buildPlayerScore(ZERO_SETS, FOUR_GAMES, LOVE))
-                                .build()
-                )
+                .firstPlayer(firstPlayer)
+                .secondPlayer(secondPlayer)
                 .build();
 
         Match calculatedMatch = service.calculate(match, FIRST_PLAYER_NUMBER);
@@ -157,17 +155,17 @@ class MatchScoreCalculationServiceTest {
 
     @Test
     void calculate_shouldStartTiebreak_whenGamesAreSixAll() {
+        Player firstPlayer = Player.builder()
+                .playerScore(buildPlayerScore(ZERO_SETS, SIX_GAMES, 0))
+                .build();
+
+        Player secondPlayer = Player.builder()
+                .playerScore(buildPlayerScore(ZERO_SETS, SIX_GAMES, 0))
+                .build();
+
         Match match = Match.builder()
-                .firstPlayer(
-                        Player.builder()
-                                .playerScore(buildPlayerScore(ZERO_SETS, SIX_GAMES, 0))
-                                .build()
-                )
-                .secondPlayer(
-                        Player.builder()
-                                .playerScore(buildPlayerScore(ZERO_SETS, SIX_GAMES, 0))
-                                .build()
-                )
+                .firstPlayer(firstPlayer)
+                .secondPlayer(secondPlayer)
                 .build();
 
         Match calculatedMatch = service.calculate(match, FIRST_PLAYER_NUMBER);
@@ -177,17 +175,17 @@ class MatchScoreCalculationServiceTest {
 
     @Test
     void calculate_shouldContinueTiebreak_whenTiebreakPointsLessThanSeven() {
+        Player firstPlayer = Player.builder()
+                .playerScore(buildPlayerScore(ZERO_SETS, SIX_GAMES, 0))
+                .build();
+
+        Player secondPlayer = Player.builder()
+                .playerScore(buildPlayerScore(ZERO_SETS, SIX_GAMES, 5))
+                .build();
+
         Match match = Match.builder()
-                .firstPlayer(
-                        Player.builder()
-                                .playerScore(buildPlayerScore(ZERO_SETS, SIX_GAMES, 0))
-                                .build()
-                )
-                .secondPlayer(
-                        Player.builder()
-                                .playerScore(buildPlayerScore(ZERO_SETS, SIX_GAMES, 5))
-                                .build()
-                )
+                .firstPlayer(firstPlayer)
+                .secondPlayer(secondPlayer)
                 .build();
 
         Match calculatedMatch = service.calculate(match, SECOND_PLAYER_NUMBER);
@@ -199,17 +197,17 @@ class MatchScoreCalculationServiceTest {
 
     @Test
     void calculate_shouldContinueTiebreak_whenTiebreakPointsAreEqualAndMoreThanSeven() {
+        Player firstPlayer = Player.builder()
+                .playerScore(buildPlayerScore(ONE_SET, SIX_GAMES, 10))
+                .build();
+
+        Player secondPlayer = Player.builder()
+                .playerScore(buildPlayerScore(ZERO_SETS, SIX_GAMES, 10))
+                .build();
+
         Match match = Match.builder()
-                .firstPlayer(
-                        Player.builder()
-                                .playerScore(buildPlayerScore(ONE_SET, SIX_GAMES, 10))
-                                .build()
-                )
-                .secondPlayer(
-                        Player.builder()
-                                .playerScore(buildPlayerScore(ZERO_SETS, SIX_GAMES, 10))
-                                .build()
-                )
+                .firstPlayer(firstPlayer)
+                .secondPlayer(secondPlayer)
                 .build();
 
         Match calculatedMatch = service.calculate(match, FIRST_PLAYER_NUMBER);
@@ -222,17 +220,17 @@ class MatchScoreCalculationServiceTest {
 
     @Test
     void calculate_shouldIncreaseSets_whenTiebreakOver() {
+        Player firstPlayer = Player.builder()
+                .playerScore(buildPlayerScore(ZERO_SETS, SIX_GAMES, 6))
+                .build();
+
+        Player secondPlayer = Player.builder()
+                .playerScore(buildPlayerScore(ZERO_SETS, SIX_GAMES, 2))
+                .build();
+
         Match match = Match.builder()
-                .firstPlayer(
-                        Player.builder()
-                                .playerScore(buildPlayerScore(ZERO_SETS, SIX_GAMES, 6))
-                                .build()
-                )
-                .secondPlayer(
-                        Player.builder()
-                                .playerScore(buildPlayerScore(ZERO_SETS, SIX_GAMES, 2))
-                                .build()
-                )
+                .firstPlayer(firstPlayer)
+                .secondPlayer(secondPlayer)
                 .build();
 
         Match calculatedMatch = service.calculate(match, FIRST_PLAYER_NUMBER);
@@ -251,17 +249,17 @@ class MatchScoreCalculationServiceTest {
     void calculate_shouldThrowIllegalArgumentException_whenInvalidPlayerNumber() {
         int invalidPlayerNumber = 3;
 
+        Player firstPlayer = Player.builder()
+                .playerScore(buildPlayerScore(ZERO_SETS, ZERO_GAMES, LOVE))
+                .build();
+
+        Player secondPlayer = Player.builder()
+                .playerScore(buildPlayerScore(ZERO_SETS, ZERO_GAMES, LOVE))
+                .build();
+
         Match match = Match.builder()
-                .firstPlayer(
-                        Player.builder()
-                                .playerScore(buildPlayerScore(ZERO_SETS, ZERO_GAMES, LOVE))
-                                .build()
-                )
-                .secondPlayer(
-                        Player.builder()
-                                .playerScore(buildPlayerScore(ZERO_SETS, ZERO_GAMES, LOVE))
-                                .build()
-                )
+                .firstPlayer(firstPlayer)
+                .secondPlayer(secondPlayer)
                 .build();
 
         assertThrows(IllegalArgumentException.class, () -> service.calculate(match, invalidPlayerNumber));
@@ -269,18 +267,18 @@ class MatchScoreCalculationServiceTest {
 
 
     @Test
-    void calculate_shouldResetToDeuce_whenPlayerLosesAdvantage() {
+    void calculate_shouldUpdateToDeuce_whenPlayerLosesAdvantage() {
+        Player firstPlayer = Player.builder()
+                .playerScore(buildPlayerScore(ZERO_SETS, ZERO_GAMES, FORTY))
+                .build();
+
+        Player secondPlayer = Player.builder()
+                .playerScore(buildPlayerScore(ZERO_SETS, ZERO_GAMES, ADVANTAGE))
+                .build();
+
         Match match = Match.builder()
-                .firstPlayer(
-                        Player.builder()
-                                .playerScore(buildPlayerScore(ZERO_SETS, ZERO_GAMES, FORTY))
-                                .build()
-                )
-                .secondPlayer(
-                        Player.builder()
-                                .playerScore(buildPlayerScore(ZERO_SETS, ZERO_GAMES, ADVANTAGE))
-                                .build()
-                )
+                .firstPlayer(firstPlayer)
+                .secondPlayer(secondPlayer)
                 .build();
 
         Match calculatedMatch = service.calculate(match, FIRST_PLAYER_NUMBER);
