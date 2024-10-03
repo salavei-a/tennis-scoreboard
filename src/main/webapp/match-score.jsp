@@ -170,7 +170,7 @@
 
     <div class="btn-form">
         <form action="<%= request.getContextPath() %>/match-score?uuid=<%= match.getUuid() %>" method="post">
-            <input type="hidden" name="player_number" value="<%= PlayerNumber.FIRST_PLAYER.getNumber() %>">
+            <input type="hidden" name="point_winner_number" value="<%= PlayerNumber.FIRST_PLAYER.getNumber() %>">
             <button type="submit" class="btn" onclick="this.disabled = true; this.form.submit();">
                 <%= match.getFirstPlayer().getName() %> Won the Point
             </button>
@@ -180,7 +180,7 @@
 
     <div class="btn-form">
         <form action="<%= request.getContextPath() %>/match-score?uuid=<%= match.getUuid() %>" method="post">
-            <input type="hidden" name="player_number" value="<%= PlayerNumber.SECOND_PLAYER.getNumber() %>">
+            <input type="hidden" name="point_winner_number" value="<%= PlayerNumber.SECOND_PLAYER.getNumber() %>">
             <button type="submit" class="btn" onclick="this.disabled = true; this.form.submit();">
                 <%= match.getSecondPlayer().getName() %> Won the Point</button>
         </form>

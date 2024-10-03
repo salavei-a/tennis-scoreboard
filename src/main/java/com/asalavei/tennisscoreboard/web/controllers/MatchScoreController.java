@@ -1,6 +1,8 @@
 package com.asalavei.tennisscoreboard.web.controllers;
 
+import com.asalavei.tennisscoreboard.exceptions.ForbiddenException;
 import com.asalavei.tennisscoreboard.exceptions.NotFoundException;
+import com.asalavei.tennisscoreboard.exceptions.ValidationException;
 import com.asalavei.tennisscoreboard.validation.validators.DataValidator;
 import com.asalavei.tennisscoreboard.web.mapper.MatchDtoMapper;
 import com.asalavei.tennisscoreboard.dto.Match;
@@ -29,14 +31,7 @@ public class MatchScoreController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String uuidParameter = request.getParameter("uuid");
-
-        if (StringUtils.isBlank(uuidParameter)) {
-            throw new NotFoundException("UUID parameter is missing or empty");
-        }
-
-        UUID uuid = DataValidator.getValidatedUuid(uuidParameter);
-
+        UUID uuid = ensureUuid(request.getParameter("uuid"));
         Match match = ongoingMatchesService.getOngoingMatch(uuid);
 
         request.setAttribute("match", mapper.toResponseDto(match));
@@ -46,12 +41,10 @@ public class MatchScoreController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        UUID uuid = DataValidator.getValidatedUuid(request.getParameter("uuid"));
-
+        UUID uuid = ensureUuid(request.getParameter("uuid"));
         Match match = ongoingMatchesService.getOngoingMatch(uuid);
 
-        int pointWinnerNumber = DataValidator.getValidatedPointWinnerNumber(request.getParameter("player_number"), match);
-
+        int pointWinnerNumber = ensurePointWinnerNumber(request.getParameter("point_winner_number"), match);
         Match calculatedMatch = matchScoreCalculationService.calculate(match, pointWinnerNumber);
 
         if (calculatedMatch.getWinner() != null) {
@@ -65,5 +58,32 @@ public class MatchScoreController extends HttpServlet {
         }
 
         response.sendRedirect(request.getContextPath() + "/match-score?uuid=" + uuid);
+    }
+
+    private UUID ensureUuid(String uuid) {
+        if (StringUtils.isBlank(uuid)) {
+            throw new NotFoundException("UUID parameter is missing or empty");
+        }
+
+        try {
+            return UUID.fromString(uuid);
+        } catch (IllegalArgumentException | NullPointerException e) {
+            throw new ForbiddenException(String.format("Invalid UUID=%s", uuid));
+        }
+    }
+
+    private int ensurePointWinnerNumber(String pointWinnerNumberParameter, Match match) {
+        int pointWinnerNumber;
+
+        try {
+            pointWinnerNumber = Integer.parseInt(pointWinnerNumberParameter);
+            DataValidator.validatePlayerParticipation(pointWinnerNumber, match);
+        } catch (NumberFormatException e) {
+            throw new ForbiddenException(String.format("Invalid number=%s for point winner in match=%s", pointWinnerNumberParameter, match));
+        } catch (ValidationException e) {
+            throw new ForbiddenException(e.getMessage());
+        }
+
+        return pointWinnerNumber;
     }
 }
