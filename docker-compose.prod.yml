@@ -13,7 +13,7 @@ services:
     ports:
       - "4680:5432"
 
-  tennis-scoreboard:
+  app:
     container_name: tennis-scoreboard-app
     image: asalavei/tennis-scoreboard
     env_file:
