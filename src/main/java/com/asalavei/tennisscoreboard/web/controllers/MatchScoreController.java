@@ -46,16 +46,16 @@ public class MatchScoreController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        UUID matchUuid = DataValidator.getValidatedUuid(request.getParameter("uuid"));
+        UUID uuid = DataValidator.getValidatedUuid(request.getParameter("uuid"));
 
-        Match match = ongoingMatchesService.getOngoingMatch(matchUuid);
+        Match match = ongoingMatchesService.getOngoingMatch(uuid);
 
         int pointWinnerNumber = DataValidator.getValidatedPointWinnerNumber(request.getParameter("player_number"), match);
 
         Match calculatedMatch = matchScoreCalculationService.calculate(match, pointWinnerNumber);
 
         if (calculatedMatch.getWinner() != null) {
-            ongoingMatchesService.remove(matchUuid);
+            ongoingMatchesService.remove(uuid);
             finishedMatchesPersistenceService.save(calculatedMatch);
 
             request.setAttribute("match", mapper.toResponseDto(calculatedMatch));
@@ -64,6 +64,6 @@ public class MatchScoreController extends HttpServlet {
             return;
         }
 
-        response.sendRedirect(request.getContextPath() + "/match-score?uuid=" + matchUuid);
+        response.sendRedirect(request.getContextPath() + "/match-score?uuid=" + uuid);
     }
 }

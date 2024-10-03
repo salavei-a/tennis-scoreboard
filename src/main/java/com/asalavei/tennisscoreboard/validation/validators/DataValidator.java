@@ -22,13 +22,21 @@ public class DataValidator {
     private DataValidator() {
     }
 
+    public static UUID getValidatedUuid(String uuid) {
+        try {
+            return UUID.fromString(uuid);
+        } catch (IllegalArgumentException | NullPointerException e) {
+            throw new ForbiddenException(String.format("Invalid UUID=%s", uuid));
+        }
+    }
+
     public static int getValidatedPointWinnerNumber(String number, Match match) {
         int pointWinnerNumber;
 
         try {
             pointWinnerNumber = Integer.parseInt(number);
         } catch (NumberFormatException e) {
-            throw new ForbiddenException(String.format("Invalid number: %s", number));
+            throw new ForbiddenException(String.format("Invalid number=%s for point winner in match=%s", number, match));
         }
 
         if (isInvalidPlayerNumber(pointWinnerNumber)) {
@@ -77,13 +85,5 @@ public class DataValidator {
         return violations.stream()
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining(", "));
-    }
-
-    public static UUID getValidatedUuid(String uuid) {
-        try {
-            return UUID.fromString(uuid);
-        } catch (IllegalArgumentException | NullPointerException e) {
-            throw new ForbiddenException(String.format("Invalid UUID=%s", uuid));
-        }
     }
 }
