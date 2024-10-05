@@ -10,8 +10,6 @@ services:
       timeout: 5s
       retries: 5
     restart: always
-    ports:
-      - "4680:5432"
 
   app:
     container_name: tennis-scoreboard-app
