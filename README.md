@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Tennis Scoreboard is a web application that implements a scoreboard for tracking the scores of tennis matches. It allows users to create new matches, view completed matches, and manage ongoing matches by updating scores in real-time.
+Tennis Scoreboard is a web application that implements a scoreboard for tracking the scores of tennis matches. It allows users to create new matches, view completed matches, and manage ongoing matches by updating scores in real-time.
 
 ## Technologies
 
